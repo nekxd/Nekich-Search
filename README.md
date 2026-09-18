@@ -11,11 +11,11 @@
 - **Поиск DuckDuckGo + Wikipedia**: Полноценный поиск по вебу с мгновенными ответами.
 - **Иконки сайтов (Favicons)**: Отображение иконки каждого сайта в результатах поиска.
 - **5 Ротируемых баннеров с переходами**:
-  1. **Inori Aizawa** (`https://faero.top/ad/inori.png`) &rarr; [https://inori.faero.top](https://inori.faero.top)
-  2. **LunaStore** (`https://faero.top/ad/ls_rek.png`) &rarr; [https://lunastore.app](https://lunastore.app)
-  3. **Renaissance** (`https://faero.top/ad/mrim.jpg`) &rarr; [https://mrim.su](https://mrim.su)
-  4. **FaeroFM** (`https://faero.top/ad/faerofm.png`) &rarr; [https://fm.faero.top](https://fm.faero.top)
-  5. **faero.top** (`https://faero.top/ad/faero.png`) &rarr; [https://faero.top](https://faero.top)
+  1. **Inori Aizawa** (`http://faero.top/ad/inori.png`) &rarr; [http://inori.faero.top](http://inori.faero.top)
+  2. **LunaStore** (`http://faero.top/ad/ls_rek.png`) &rarr; [http://lunastore.app](http://lunastore.app)
+  3. **Renaissance** (`http://faero.top/ad/mrim.jpg`) &rarr; [http://mrim.su](http://mrim.su)
+  4. **FaeroFM** (`http://faero.top/ad/faerofm.png`) &rarr; [http://fm.faero.top](http://fm.faero.top)
+  5. **faero.top** (`http://faero.top/ad/faero.png`) &rarr; [http://faero.top](http://faero.top)
 - **Страницы**:
   - `about.html` (`/about`) — **О компании** (информация о проекте и создателе).
   - `advertising.html` (`/advertising`) — **Реклама** (контакты для размещения рекламы: `nekxd@bk.ru`).
