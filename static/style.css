@@ -303,6 +303,17 @@ a:visited {
 
 .kv {
     margin-bottom: 2px;
+    line-height: 16px;
+}
+
+.site-favicon {
+    width: 16px;
+    height: 16px;
+    vertical-align: middle;
+    margin-right: 6px;
+    margin-top: -2px;
+    display: inline-block;
+    border: 0;
 }
 
 cite {
@@ -310,6 +321,7 @@ cite {
     font-style: normal;
     font-size: 14px;
     line-height: 16px;
+    vertical-align: middle;
 }
 
 .st {

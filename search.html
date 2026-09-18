@@ -189,6 +189,18 @@
         // Search Execution
         var startTime = new Date().getTime();
 
+        function getFaviconUrl(url) {
+            if (!url) return "";
+            try {
+                var a = document.createElement('a');
+                a.href = url;
+                var host = a.hostname || url;
+                return "https://www.google.com/s2/favicons?domain=" + encodeURIComponent(host) + "&sz=16";
+            } catch(e) {
+                return "https://www.google.com/s2/favicons?domain=" + encodeURIComponent(url) + "&sz=16";
+            }
+        }
+
         function renderResults(items, zeroClick) {
             var elapsed = ((new Date().getTime() - startTime) / 1000).toFixed(2);
             var statsEl = document.getElementById("result-stats");
@@ -202,9 +214,13 @@
             var html = "";
 
             if (zeroClick) {
+                var zcFav = getFaviconUrl(zeroClick.url);
                 html += '<div class="g" style="border: 1px solid #ebebeb; padding: 12px; background: #fafafa; margin-bottom: 25px;">';
                 html += '<h3 class="r"><a href="' + escapeHtml(zeroClick.url) + '" target="_blank">' + escapeHtml(zeroClick.title) + '</a></h3>';
-                html += '<div class="kv"><cite>' + escapeHtml(zeroClick.url) + '</cite></div>';
+                html += '<div class="kv">';
+                html += '<img src="' + escapeHtml(zcFav) + '" class="site-favicon" width="16" height="16" alt="" onerror="this.style.display=\'none\'">';
+                html += '<cite>' + escapeHtml(zeroClick.url) + '</cite>';
+                html += '</div>';
                 html += '<span class="st">' + zeroClick.snippet + '</span>';
                 html += '</div>';
             }
@@ -212,9 +228,13 @@
             if (items.length > 0) {
                 for (var i = 0; i < items.length; i++) {
                     var it = items[i];
+                    var fav = getFaviconUrl(it.url);
                     html += '<div class="g">';
                     html += '<h3 class="r"><a href="' + escapeHtml(it.url) + '" target="_blank">' + escapeHtml(it.title) + '</a></h3>';
-                    html += '<div class="kv"><cite>' + escapeHtml(it.display_url || it.url) + '</cite></div>';
+                    html += '<div class="kv">';
+                    html += '<img src="' + escapeHtml(fav) + '" class="site-favicon" width="16" height="16" alt="" onerror="this.style.display=\'none\'">';
+                    html += '<cite>' + escapeHtml(it.display_url || it.url) + '</cite>';
+                    html += '</div>';
                     html += '<span class="st">' + it.snippet + '</span>';
                     html += '</div>';
                 }

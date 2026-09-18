@@ -239,6 +239,15 @@ def fetch_duckduckgo_results(query, page=1):
         except Exception:
             pass
 
+    # Attach favicon URLs for all items
+    if zero_click and "favicon_url" not in zero_click:
+        zc_domain = urllib.parse.urlparse(zero_click.get("url", "")).netloc or "duckduckgo.com"
+        zero_click["favicon_url"] = f"https://www.google.com/s2/favicons?domain={urllib.parse.quote(zc_domain)}&sz=16"
+
+    for it in results:
+        it_domain = urllib.parse.urlparse(it.get("url", "")).netloc or it.get("display_url", "")
+        it["favicon_url"] = f"https://www.google.com/s2/favicons?domain={urllib.parse.quote(it_domain)}&sz=16"
+
     return {"zero_click": zero_click, "results": results}
 
 

@@ -49,7 +49,10 @@
                     {% if zero_click %}
                     <div class="g" style="border: 1px solid #ebebeb; padding: 12px; background: #fafafa; margin-bottom: 25px;">
                         <h3 class="r"><a href="{{ zero_click.url }}" target="_blank">{{ zero_click.title }}</a></h3>
-                        <div class="kv"><cite>{{ zero_click.url }}</cite></div>
+                        <div class="kv">
+                            <img src="{{ zero_click.favicon_url }}" class="site-favicon" width="16" height="16" alt="" onerror="this.style.display='none'">
+                            <cite>{{ zero_click.url }}</cite>
+                        </div>
                         <span class="st">{{ zero_click.snippet }}</span>
                     </div>
                     {% endif %}
@@ -58,7 +61,10 @@
                         {% for item in results %}
                         <div class="g">
                             <h3 class="r"><a href="{{ item.url }}" target="_blank">{{ item.title }}</a></h3>
-                            <div class="kv"><cite>{{ item.display_url }}</cite></div>
+                            <div class="kv">
+                                <img src="{{ item.favicon_url }}" class="site-favicon" width="16" height="16" alt="" onerror="this.style.display='none'">
+                                <cite>{{ item.display_url }}</cite>
+                            </div>
                             <span class="st">{{ item.snippet }}</span>
                         </div>
                         {% endfor %}

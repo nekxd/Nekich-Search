@@ -45,6 +45,15 @@ def run_tests():
             print(f"  Banner {i+1} ({b['name']}): {len(data)} bytes -> OK")
     print("[OK] All 5 banners loaded properly!")
 
+    # 4. Test Favicons in Search
+    print("\n--- Test 4: Favicons in Search Results ---")
+    with urllib.request.urlopen(f"{base_url}/search?q=google") as resp:
+        assert resp.status == 200
+        content = resp.read().decode("utf-8")
+        assert "site-favicon" in content
+        print("  Search page contains 'site-favicon' class -> OK")
+    print("[OK] Favicons in search results verified!")
+
     # Shutdown
     server.shutdown()
     server.server_close()
