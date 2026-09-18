@@ -1,0 +1,417 @@
+/* Retro 2014 Google CSS - Nekich Search */
+/* Compatible with IE6, IE7, IE8, Modern Browsers, Plain HTTP */
+
+body {
+    background: #ffffff;
+    color: #222222;
+    font-family: arial, sans-serif;
+    font-size: 13px;
+    margin: 0;
+    padding: 0;
+}
+
+a {
+    color: #1a0dab;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+a:visited {
+    color: #609;
+}
+
+/* Homepage Styles */
+.hp-body {
+    text-align: center;
+}
+
+.hp-main {
+    margin-top: 140px;
+}
+
+.hp-logo {
+    border: 0;
+    margin-bottom: 25px;
+}
+
+.hp-search-box-wrap {
+    width: 584px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.hp-search-input {
+    width: 540px;
+    height: 36px;
+    line-height: 36px;
+    padding: 0 12px;
+    font-size: 16px;
+    font-family: arial, sans-serif;
+    border: 1px solid #d9d9d9;
+    border-top: 1px solid #c0c0c0;
+    outline: none;
+    box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+}
+
+.hp-search-input:hover {
+    border: 1px solid #b9b9b9;
+    border-top: 1px solid #a0a0a0;
+}
+
+.hp-search-input:focus {
+    border: 1px solid #4d90fe;
+}
+
+.hp-buttons {
+    margin-top: 18px;
+}
+
+.btn {
+    background-color: #f2f2f2;
+    background-image: -webkit-linear-gradient(top, #f5f5f5, #f1f1f1);
+    background-image: -moz-linear-gradient(top, #f5f5f5, #f1f1f1);
+    background-image: linear-gradient(top, #f5f5f5, #f1f1f1);
+    border: 1px solid #f2f2f2;
+    border-radius: 2px;
+    color: #5F6368;
+    font-family: arial, sans-serif;
+    font-size: 13px;
+    font-weight: bold;
+    margin: 11px 4px;
+    padding: 0 16px;
+    line-height: 34px;
+    height: 36px;
+    min-width: 54px;
+    text-align: center;
+    cursor: pointer;
+    user-select: none;
+}
+
+.btn:hover {
+    background-color: #f8f8f8;
+    background-image: -webkit-linear-gradient(top, #f8f8f8, #f1f1f1);
+    background-image: -moz-linear-gradient(top, #f8f8f8, #f1f1f1);
+    background-image: linear-gradient(top, #f8f8f8, #f1f1f1);
+    border: 1px solid #c6c6c6;
+    color: #222222;
+    box-shadow: 0 1px 1px rgba(0,0,0,0.1);
+}
+
+.hp-footer {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: #f2f2f2;
+    border-top: 1px solid #e4e4e4;
+    line-height: 40px;
+    font-size: 13px;
+    color: #777777;
+    min-width: 800px;
+}
+
+.hp-footer-content {
+    padding: 0 20px;
+}
+
+.hp-footer a {
+    color: #666666;
+    margin: 0 12px;
+    text-decoration: none;
+}
+
+.hp-footer a:hover {
+    color: #333333;
+}
+
+.fl {
+    float: left;
+}
+
+.fr {
+    float: right;
+}
+
+.clear {
+    clear: both;
+}
+
+/* Subpages (About, Advertising, Settings) */
+.subpage-header {
+    border-bottom: 1px solid #ebebeb;
+    padding: 15px 30px;
+    background: #ffffff;
+}
+
+.subpage-header-title {
+    font-size: 20px;
+    color: #666666;
+    margin-left: 15px;
+    vertical-align: middle;
+    display: inline-block;
+}
+
+.subpage-container {
+    max-width: 750px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+.content-card {
+    background: #ffffff;
+    border: 1px solid #e5e5e5;
+    padding: 30px;
+    border-radius: 2px;
+}
+
+.content-heading {
+    font-size: 22px;
+    font-weight: normal;
+    color: #222222;
+    margin-top: 0;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #f0f0f0;
+    padding-bottom: 10px;
+}
+
+/* Search Page Styles */
+.search-header {
+    background: #ffffff;
+    border-bottom: 1px solid #ebebeb;
+    padding: 15px 0 15px 0;
+}
+
+.header-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.header-logo-cell {
+    width: 150px;
+    padding-left: 20px;
+    vertical-align: middle;
+}
+
+.header-search-cell {
+    vertical-align: middle;
+}
+
+.search-form-wrap {
+    display: inline-block;
+    white-space: nowrap;
+}
+
+.search-input-header {
+    width: 520px;
+    height: 32px;
+    line-height: 32px;
+    font-size: 16px;
+    font-family: arial, sans-serif;
+    padding: 0 8px;
+    border: 1px solid #d9d9d9;
+    border-top: 1px solid #c0c0c0;
+    outline: none;
+    vertical-align: middle;
+}
+
+.search-input-header:focus {
+    border: 1px solid #4d90fe;
+}
+
+.search-btn-header {
+    height: 34px;
+    width: 60px;
+    background-color: #4285f4;
+    border: 1px solid #4285f4;
+    color: #ffffff;
+    cursor: pointer;
+    vertical-align: middle;
+    margin-left: -1px;
+    padding: 0;
+    text-align: center;
+}
+
+.search-btn-header:hover {
+    background-color: #3b78e7;
+    border-color: #3b78e7;
+}
+
+.search-btn-header svg {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+/* Results Content */
+.results-container {
+    padding-left: 150px;
+    padding-top: 15px;
+    padding-bottom: 40px;
+}
+
+.result-stats {
+    font-size: 13px;
+    color: #808080;
+    margin-bottom: 18px;
+}
+
+.results-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.results-left {
+    width: 580px;
+    vertical-align: top;
+    padding-right: 40px;
+}
+
+.results-right {
+    vertical-align: top;
+    width: 360px;
+}
+
+/* Search Result Item */
+.g {
+    margin-bottom: 23px;
+    line-height: 1.2;
+}
+
+.r {
+    margin: 0 0 3px 0;
+    font-size: 18px;
+    font-weight: normal;
+    line-height: 1.2;
+}
+
+.r a {
+    color: #1a0dab;
+    text-decoration: none;
+}
+
+.r a:hover {
+    text-decoration: underline;
+}
+
+.r a:visited {
+    color: #609;
+}
+
+.kv {
+    margin-bottom: 2px;
+}
+
+cite {
+    color: #006621;
+    font-style: normal;
+    font-size: 14px;
+    line-height: 16px;
+}
+
+.st {
+    color: #545454;
+    font-size: 13px;
+    line-height: 1.4;
+    word-wrap: break-word;
+}
+
+.st b, .st strong {
+    color: #333333;
+    font-weight: bold;
+}
+
+/* Larger Banner Ad Block */
+.ad-sidebar {
+    background: #ffffff;
+    border: 1px solid #e5e5e5;
+    padding: 14px;
+    width: 350px;
+    box-sizing: border-box;
+    margin-bottom: 20px;
+}
+
+.ad-label-top {
+    font-size: 11px;
+    color: #006621;
+    border: 1px solid #006621;
+    border-radius: 2px;
+    padding: 0 4px;
+    display: inline-block;
+    margin-bottom: 10px;
+    line-height: 14px;
+}
+
+.ad-banner-img {
+    width: 100%;
+    max-width: 320px;
+    height: auto;
+    display: block;
+    border: 0;
+    margin: 0 auto;
+}
+
+.ad-caption {
+    font-size: 13px;
+    color: #444444;
+    margin-top: 8px;
+    line-height: 1.4;
+}
+
+/* Clean Numbered Pagination */
+.clean-pagination {
+    margin-top: 35px;
+    margin-bottom: 30px;
+    font-size: 14px;
+}
+
+.clean-pagination a {
+    display: inline-block;
+    padding: 4px 10px;
+    margin: 0 2px;
+    color: #1a0dab;
+    border: 1px solid transparent;
+    text-decoration: none;
+}
+
+.clean-pagination a:hover {
+    border: 1px solid #d9d9d9;
+    background: #f8f8f8;
+    text-decoration: none;
+}
+
+.clean-pagination .page-active {
+    display: inline-block;
+    padding: 4px 10px;
+    margin: 0 2px;
+    font-weight: bold;
+    color: #222222;
+    border: 1px solid #d9d9d9;
+    background: #f2f2f2;
+}
+
+.clean-pagination .page-nav-btn {
+    font-weight: bold;
+    padding: 4px 12px;
+}
+
+/* Search Footer */
+.search-footer {
+    background: #f2f2f2;
+    border-top: 1px solid #e4e4e4;
+    padding: 15px 150px;
+    font-size: 13px;
+    color: #777777;
+}
+
+.search-footer a {
+    color: #666666;
+    margin-right: 15px;
+}
+
+.search-footer a:hover {
+    color: #333333;
+}

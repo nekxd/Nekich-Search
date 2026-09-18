@@ -1,0 +1,136 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>{{ query }} - Nekich Search</title>
+    <link rel="shortcut icon" href="/static/favicon.ico" type="image/x-icon">
+    <link rel="icon" href="/static/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" type="text/css" href="/static/style.css">
+</head>
+<body>
+
+    <!-- Search Header (No gbar, No tabs) -->
+    <div class="search-header">
+        <table class="header-table">
+            <tr>
+                <td class="header-logo-cell">
+                    <a href="/">
+                        <img src="/static/images/srpr/logo11w.png" width="120" height="44" alt="Google" style="border:0;">
+                    </a>
+                </td>
+                <td class="header-search-cell">
+                    <form action="/search" method="GET" style="margin:0; padding:0;">
+                        <span class="search-form-wrap">
+                            <input type="text" name="q" value="{{ query }}" class="search-input-header" maxlength="2048" autocomplete="off">
+                            <button type="submit" class="search-btn-header" title="Поиск">
+                                <svg viewBox="0 0 24 24" width="18" height="18" style="vertical-align: middle; fill: #ffffff;" aria-hidden="true">
+                                    <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 14z"/>
+                                </svg>
+                            </button>
+                        </span>
+                    </form>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- Results Section -->
+    <div class="results-container">
+        
+        <div class="result-stats">
+            Результатов: примерно {{ total_results_fmt }} ({{ elapsed_time }} сек.)
+        </div>
+
+        <table class="results-table">
+            <tr>
+                <!-- Left Column: Search Results -->
+                <td class="results-left" {% if ads_disabled %}style="width: 750px;"{% endif %}>
+                    
+                    {% if zero_click %}
+                    <div class="g" style="border: 1px solid #ebebeb; padding: 12px; background: #fafafa; margin-bottom: 25px;">
+                        <h3 class="r"><a href="{{ zero_click.url }}" target="_blank">{{ zero_click.title }}</a></h3>
+                        <div class="kv"><cite>{{ zero_click.url }}</cite></div>
+                        <span class="st">{{ zero_click.snippet }}</span>
+                    </div>
+                    {% endif %}
+
+                    {% if results %}
+                        {% for item in results %}
+                        <div class="g">
+                            <h3 class="r"><a href="{{ item.url }}" target="_blank">{{ item.title }}</a></h3>
+                            <div class="kv"><cite>{{ item.display_url }}</cite></div>
+                            <span class="st">{{ item.snippet }}</span>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div style="margin-top: 20px; font-size: 14px;">
+                            <p>По запросу <b>{{ query }}</b> ничего не найдено.</p>
+                            <p>Рекомендации:</p>
+                            <ul>
+                                <li>Убедитесь, что все слова написаны без ошибок.</li>
+                                <li>Попробуйте использовать другие ключевые слова.</li>
+                                <li>Попробуйте использовать более популярные ключевые слова.</li>
+                            </ul>
+                        </div>
+                    {% endif %}
+
+                    <!-- Clean Numbered Pagination -->
+                    {% if total_pages > 1 and results %}
+                    <div class="clean-pagination">
+                        {% if current_page > 1 %}
+                        <a href="/search?q={{ query_encoded }}&p={{ current_page - 1 }}" class="page-nav-btn">&lt;&lt; Предыдущая</a>
+                        {% endif %}
+
+                        {% for p in pages %}
+                            {% if p == current_page %}
+                                <span class="page-active">{{ p }}</span>
+                            {% else %}
+                                <a href="/search?q={{ query_encoded }}&p={{ p }}">{{ p }}</a>
+                            {% endif %}
+                        {% endfor %}
+
+                        {% if current_page < total_pages %}
+                        <a href="/search?q={{ query_encoded }}&p={{ current_page + 1 }}" class="page-nav-btn">Следующая &gt;&gt;</a>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+
+                </td>
+
+                <!-- Right Column: Larger Rotating Ad Banner (if ads not disabled in settings) -->
+                {% if not ads_disabled %}
+                <td class="results-right">
+                    <div class="ad-sidebar">
+                        <div class="ad-label-top">Реклама</div>
+                        <a href="{{ banner_target }}" target="_blank" title="{{ banner_name }}">
+                            <img src="/ad/banner.png?b={{ banner_idx }}&t={{ timestamp }}" alt="{{ banner_caption }}" class="ad-banner-img">
+                        </a>
+                        <div class="ad-caption">
+                            {{ banner_caption }}
+                        </div>
+                    </div>
+                </td>
+                {% endif %}
+            </tr>
+        </table>
+
+    </div>
+
+    <!-- Footer -->
+    <div class="search-footer">
+        <div class="fl">
+            <a href="/about">О компании</a>
+            <a href="/advertising">Реклама</a>
+            <a href="/business">Для бизнеса</a>
+            <a href="/privacy">Конфиденциальность</a>
+            <a href="/terms">Условия</a>
+            <a href="/settings">Настройки</a>
+        </div>
+        <div class="fr">
+            <span>Nekich Search &copy; {{ copyright_years }}</span>
+        </div>
+        <div class="clear"></div>
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,414 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Nekich Search</title>
+    <link rel="shortcut icon" href="static/favicon.ico" type="image/x-icon">
+    <link rel="icon" href="static/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" type="text/css" href="static/style.css">
+</head>
+<body>
+
+    <!-- Search Header (No gbar, No tabs) -->
+    <div class="search-header">
+        <table class="header-table">
+            <tr>
+                <td class="header-logo-cell">
+                    <a href="index.html">
+                        <img src="static/images/srpr/logo11w.png" width="120" height="44" alt="Google" style="border:0;">
+                    </a>
+                </td>
+                <td class="header-search-cell">
+                    <form action="search.html" method="GET" style="margin:0; padding:0;">
+                        <span class="search-form-wrap">
+                            <input type="text" name="q" id="query-input" value="" class="search-input-header" maxlength="2048" autocomplete="off">
+                            <button type="submit" class="search-btn-header" title="Поиск">
+                                <svg viewBox="0 0 24 24" width="18" height="18" style="vertical-align: middle; fill: #ffffff;" aria-hidden="true">
+                                    <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 14z"/>
+                                </svg>
+                            </button>
+                        </span>
+                    </form>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- Results Section -->
+    <div class="results-container">
+        
+        <div class="result-stats" id="result-stats">
+            Загрузка результатов...
+        </div>
+
+        <table class="results-table">
+            <tr>
+                <!-- Left Column: Search Results -->
+                <td class="results-left" id="results-left">
+                    <div id="results-list">
+                        <div style="margin-top: 20px; font-size: 14px; color: #666;">
+                            Поиск по запросу...
+                        </div>
+                    </div>
+
+                    <!-- Clean Numbered Pagination -->
+                    <div class="clean-pagination" id="pagination" style="display:none;"></div>
+                </td>
+
+                <!-- Right Column: Larger Rotating Ad Banner -->
+                <td class="results-right" id="results-right">
+                    <div class="ad-sidebar" id="ad-box">
+                        <div class="ad-label-top">Реклама</div>
+                        <a id="banner-link" href="#" target="_blank">
+                            <img id="banner-img" src="" alt="Реклама" class="ad-banner-img">
+                        </a>
+                        <div class="ad-caption" id="banner-caption"></div>
+                    </div>
+                </td>
+            </tr>
+        </table>
+
+    </div>
+
+    <!-- Footer -->
+    <div class="search-footer">
+        <div class="fl">
+            <a href="about.html">О компании</a>
+            <a href="advertising.html">Реклама</a>
+            <a href="business.html">Для бизнеса</a>
+            <a href="privacy.html">Конфиденциальность</a>
+            <a href="terms.html">Условия</a>
+            <a href="settings.html">Настройки</a>
+        </div>
+        <div class="fr">
+            <span>Nekich Search &copy; <span id="copy-year">2026</span></span>
+        </div>
+        <div class="clear"></div>
+    </div>
+
+    <script type="text/javascript">
+    (function() {
+        // Dynamic Copyright
+        var curYear = new Date().getFullYear();
+        var copyEl = document.getElementById("copy-year");
+        if (copyEl) {
+            copyEl.innerText = (curYear > 2026) ? "2026-" + curYear : "2026";
+        }
+
+        // Banners Data (5 Rotating Banners)
+        var BANNERS = [
+            {
+                name: "Inori Aizawa",
+                caption: "Inori Aizawa - Let's explore the web!",
+                img_url: "https://faero.top/ad/inori.png",
+                target_url: "https://inori.faero.top"
+            },
+            {
+                name: "LunaStore",
+                caption: "LunaStore - Лучший магазин приложений для старых ПК (работает даже на IE6)",
+                img_url: "https://faero.top/ad/ls_rek.png",
+                target_url: "https://lunastore.app"
+            },
+            {
+                name: "Renaissance",
+                caption: "Renaissance - мессенджер основанный на движке Агента@Mail.RU",
+                img_url: "https://faero.top/ad/mrim.jpg",
+                target_url: "https://mrim.su"
+            },
+            {
+                name: "FaeroFM",
+                caption: "FaeroFM - Old hits. Good memories.",
+                img_url: "https://faero.top/ad/faerofm.png",
+                target_url: "https://fm.faero.top"
+            },
+            {
+                name: "faero.top",
+                caption: "faero.top - Подари вторую жизнь своему браузеру из нулевых!",
+                img_url: "https://faero.top/ad/faero.png",
+                target_url: "https://faero.top"
+            }
+        ];
+
+        // Parse Query Params
+        function getParam(name) {
+            var match = RegExp('[?&]' + name + '=([^&]*)').exec(window.location.search);
+            return match ? decodeURIComponent(match[1].replace(/\+/g, ' ')) : null;
+        }
+
+        var q = getParam('q');
+        var page = parseInt(getParam('p'), 10) || 1;
+        var btnI = getParam('btnI');
+
+        if (!q || q.trim() === "") {
+            window.location.href = "index.html";
+            return;
+        }
+
+        q = q.trim();
+        document.title = q + " - Nekich Search";
+        var inputEl = document.getElementById("query-input");
+        if (inputEl) inputEl.value = q;
+
+        // "Мне повезёт!" Auto-redirect
+        if (btnI !== null) {
+            window.location.href = "https://duckduckgo.com/?q=!+" + encodeURIComponent(q);
+            return;
+        }
+
+        // Ads Handling
+        var adsDisabled = false;
+        try {
+            if (localStorage.getItem("ads_disabled") === "1") {
+                adsDisabled = true;
+            }
+        } catch(e) {}
+        if (document.cookie.indexOf("ads_disabled=1") !== -1) {
+            adsDisabled = true;
+        }
+
+        var resultsLeft = document.getElementById("results-left");
+        var resultsRight = document.getElementById("results-right");
+        if (adsDisabled) {
+            if (resultsRight) resultsRight.style.display = "none";
+            if (resultsLeft) resultsLeft.style.width = "750px";
+        } else {
+            var bIdx = Math.floor(Math.random() * BANNERS.length);
+            var banner = BANNERS[bIdx];
+            var bLink = document.getElementById("banner-link");
+            var bImg = document.getElementById("banner-img");
+            var bCaption = document.getElementById("banner-caption");
+            if (bLink && bImg && bCaption) {
+                bLink.href = banner.target_url;
+                bLink.title = banner.name;
+                bImg.src = banner.img_url;
+                bImg.alt = banner.caption;
+                bCaption.innerText = banner.caption;
+            }
+        }
+
+        // Search Execution
+        var startTime = new Date().getTime();
+
+        function renderResults(items, zeroClick) {
+            var elapsed = ((new Date().getTime() - startTime) / 1000).toFixed(2);
+            var statsEl = document.getElementById("result-stats");
+            var listEl = document.getElementById("results-list");
+
+            var countApprox = (items.length * 14200 + Math.floor(Math.random() * 5000)).toLocaleString('ru-RU');
+            if (statsEl) {
+                statsEl.innerText = "Результатов: примерно " + countApprox + " (" + elapsed + " сек.)";
+            }
+
+            var html = "";
+
+            if (zeroClick) {
+                html += '<div class="g" style="border: 1px solid #ebebeb; padding: 12px; background: #fafafa; margin-bottom: 25px;">';
+                html += '<h3 class="r"><a href="' + escapeHtml(zeroClick.url) + '" target="_blank">' + escapeHtml(zeroClick.title) + '</a></h3>';
+                html += '<div class="kv"><cite>' + escapeHtml(zeroClick.url) + '</cite></div>';
+                html += '<span class="st">' + zeroClick.snippet + '</span>';
+                html += '</div>';
+            }
+
+            if (items.length > 0) {
+                for (var i = 0; i < items.length; i++) {
+                    var it = items[i];
+                    html += '<div class="g">';
+                    html += '<h3 class="r"><a href="' + escapeHtml(it.url) + '" target="_blank">' + escapeHtml(it.title) + '</a></h3>';
+                    html += '<div class="kv"><cite>' + escapeHtml(it.display_url || it.url) + '</cite></div>';
+                    html += '<span class="st">' + it.snippet + '</span>';
+                    html += '</div>';
+                }
+            } else {
+                html += '<div style="margin-top: 20px; font-size: 14px;">';
+                html += '<p>По запросу <b>' + escapeHtml(q) + '</b> ничего не найдено.</p>';
+                html += '<p>Рекомендации:</p>';
+                html += '<ul>';
+                html += '<li>Убедитесь, что все слова написаны без ошибок.</li>';
+                html += '<li>Попробуйте использовать другие ключевые слова.</li>';
+                html += '<li>Попробуйте использовать более популярные ключевые слова.</li>';
+                html += '</ul>';
+                html += '<p style="margin-top:20px;"><a href="https://duckduckgo.com/?q=' + encodeURIComponent(q) + '" target="_blank" class="btn" style="display:inline-block; line-height:34px; text-decoration:none;">Искать «' + escapeHtml(q) + '» в DuckDuckGo &rarr;</a></p>';
+                html += '</div>';
+            }
+
+            // Fallback web search box
+            if (items.length > 0) {
+                html += '<div style="margin-top: 30px; padding: 15px; background: #f9f9f9; border: 1px solid #eee; border-radius: 2px;">';
+                html += '<div style="font-weight: bold; margin-bottom: 8px; color: #444;">Искать на других поисковых системах:</div>';
+                html += '<a href="https://duckduckgo.com/?q=' + encodeURIComponent(q) + '" target="_blank" style="margin-right: 15px;">DuckDuckGo</a> ';
+                html += '<a href="https://www.google.com/search?q=' + encodeURIComponent(q) + '" target="_blank" style="margin-right: 15px;">Google</a> ';
+                html += '<a href="https://yandex.ru/search/?text=' + encodeURIComponent(q) + '" target="_blank">Яндекс</a>';
+                html += '</div>';
+            }
+
+            if (listEl) listEl.innerHTML = html;
+
+            // Pagination
+            var paginationEl = document.getElementById("pagination");
+            if (paginationEl && items.length > 0) {
+                var totalPages = 5;
+                var pagHtml = "";
+                if (page > 1) {
+                    pagHtml += '<a href="search.html?q=' + encodeURIComponent(q) + '&p=' + (page - 1) + '" class="page-nav-btn">&lt;&lt; Предыдущая</a> ';
+                }
+                for (var p = 1; p <= totalPages; p++) {
+                    if (p === page) {
+                        pagHtml += '<span class="page-active">' + p + '</span> ';
+                    } else {
+                        pagHtml += '<a href="search.html?q=' + encodeURIComponent(q) + '&p=' + p + '">' + p + '</a> ';
+                    }
+                }
+                if (page < totalPages) {
+                    pagHtml += '<a href="search.html?q=' + encodeURIComponent(q) + '&p=' + (page + 1) + '" class="page-nav-btn">Следующая &gt;&gt;</a>';
+                }
+                paginationEl.innerHTML = pagHtml;
+                paginationEl.style.display = "block";
+            }
+        }
+
+        function escapeHtml(str) {
+            if (!str) return "";
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;');
+        }
+
+        // Fetch using Wikipedia OpenSearch + DuckDuckGo JSONP API
+        function performSearch() {
+            var collectedResults = [];
+            var zeroClick = null;
+
+            // 1. DuckDuckGo Instant Answer API via JSONP
+            window.ddgCallback = function(data) {
+                if (data) {
+                    if (data.Abstract && data.AbstractURL) {
+                        zeroClick = {
+                            title: data.Heading || q,
+                            url: data.AbstractURL,
+                            snippet: data.Abstract
+                        };
+                    }
+                    if (data.RelatedTopics && data.RelatedTopics.length > 0) {
+                        for (var i = 0; i < data.RelatedTopics.length; i++) {
+                            var t = data.RelatedTopics[i];
+                            if (t.FirstURL && t.Text) {
+                                collectedResults.push({
+                                    title: t.Text.split(' - ')[0] || t.Text,
+                                    url: t.FirstURL,
+                                    display_url: t.FirstURL,
+                                    snippet: t.Text
+                                });
+                            }
+                        }
+                    }
+                }
+                fetchWiki();
+            };
+
+            var ddgScript = document.createElement("script");
+            ddgScript.src = "https://api.duckduckgo.com/?q=" + encodeURIComponent(q) + "&format=json&callback=ddgCallback&no_html=1&skip_disambig=1";
+            ddgScript.onerror = function() {
+                fetchWiki();
+            };
+            document.body.appendChild(ddgScript);
+
+            // 2. Wikipedia Search API
+            function fetchWiki() {
+                var wikiUrl = "https://ru.wikipedia.org/w/api.php?action=opensearch&search=" + encodeURIComponent(q) + "&limit=10&namespace=0&format=json&origin=*";
+                var xhr = new XMLHttpRequest();
+                xhr.open("GET", wikiUrl, true);
+                xhr.onreadystatechange = function() {
+                    if (xhr.readyState === 4) {
+                        if (xhr.status === 200) {
+                            try {
+                                var data = JSON.parse(xhr.responseText);
+                                var titles = data[1] || [];
+                                var snippets = data[2] || [];
+                                var urls = data[3] || [];
+                                for (var i = 0; i < titles.length; i++) {
+                                    collectedResults.push({
+                                        title: titles[i],
+                                        url: urls[i],
+                                        display_url: urls[i],
+                                        snippet: snippets[i] || "Подробнее читайте в статье на Википедии..."
+                                    });
+                                }
+                            } catch(e) {}
+                        }
+                        
+                        // If no results from RU wiki, try EN wiki
+                        if (collectedResults.length === 0 && !zeroClick) {
+                            fetchEnWiki();
+                        } else {
+                            finishSearch();
+                        }
+                    }
+                };
+                xhr.onerror = function() {
+                    finishSearch();
+                };
+                xhr.send();
+            }
+
+            function fetchEnWiki() {
+                var wikiUrl = "https://en.wikipedia.org/w/api.php?action=opensearch&search=" + encodeURIComponent(q) + "&limit=10&namespace=0&format=json&origin=*";
+                var xhr = new XMLHttpRequest();
+                xhr.open("GET", wikiUrl, true);
+                xhr.onreadystatechange = function() {
+                    if (xhr.readyState === 4) {
+                        if (xhr.status === 200) {
+                            try {
+                                var data = JSON.parse(xhr.responseText);
+                                var titles = data[1] || [];
+                                var snippets = data[2] || [];
+                                var urls = data[3] || [];
+                                for (var i = 0; i < titles.length; i++) {
+                                    collectedResults.push({
+                                        title: titles[i],
+                                        url: urls[i],
+                                        display_url: urls[i],
+                                        snippet: snippets[i] || "Read more on Wikipedia..."
+                                    });
+                                }
+                            } catch(e) {}
+                        }
+                        finishSearch();
+                    }
+                };
+                xhr.onerror = function() {
+                    finishSearch();
+                };
+                xhr.send();
+            }
+
+            function finishSearch() {
+                // Remove duplicates
+                var seen = {};
+                var unique = [];
+                for (var i = 0; i < collectedResults.length; i++) {
+                    var item = collectedResults[i];
+                    if (!seen[item.url]) {
+                        seen[item.url] = true;
+                        unique.push(item);
+                    }
+                }
+                renderResults(unique, zeroClick);
+            }
+
+            // Fallback timeout in case of network issues
+            setTimeout(function() {
+                var listEl = document.getElementById("results-list");
+                if (listEl && listEl.innerText.indexOf("Загрузка") !== -1) {
+                    finishSearch();
+                }
+            }, 3500);
+        }
+
+        performSearch();
+
+    })();
+    </script>
+</body>
+</html>
