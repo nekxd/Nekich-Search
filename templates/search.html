@@ -51,7 +51,7 @@
                         <h3 class="r"><a href="{{ zero_click.url }}" target="_blank">{{ zero_click.title }}</a></h3>
                         <div class="kv">
                             <img src="{{ zero_click.favicon_url }}" class="site-favicon" width="16" height="16" alt="" onerror="this.style.display='none'">
-                            <cite>{{ zero_click.url }}</cite>
+                            <cite>{{ zero_click.display_url }}</cite>
                         </div>
                         <span class="st">{{ zero_click.snippet }}</span>
                     </div>
@@ -103,16 +103,21 @@
 
                 </td>
 
-                <!-- Right Column: Larger Rotating Ad Banner (if ads not disabled in settings) -->
+                <!-- Right Column: Structured Ad Banner (Баннер / Название / Описание) -->
                 {% if not ads_disabled %}
                 <td class="results-right">
                     <div class="ad-sidebar">
                         <div class="ad-label-top">Реклама</div>
-                        <a href="{{ banner_target }}" target="_blank" title="{{ banner_name }}">
-                            <img src="/ad/banner.png?b={{ banner_idx }}&t={{ timestamp }}" alt="{{ banner_caption }}" class="ad-banner-img">
-                        </a>
-                        <div class="ad-caption">
-                            {{ banner_caption }}
+                        <div class="ad-banner-wrap">
+                            <a href="{{ banner_target }}" target="_blank" title="{{ banner_name }}">
+                                <img src="/ad/banner.png?b={{ banner_idx }}&t={{ timestamp }}" alt="{{ banner_name }}" class="ad-banner-img">
+                            </a>
+                        </div>
+                        <div class="ad-title">
+                            <a href="{{ banner_target }}" target="_blank">{{ banner_name }}</a>
+                        </div>
+                        <div class="ad-desc">
+                            {{ banner_desc }}
                         </div>
                     </div>
                 </td>

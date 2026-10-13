@@ -54,6 +54,27 @@ def run_tests():
         print("  Search page contains 'site-favicon' class -> OK")
     print("[OK] Favicons in search results verified!")
 
+    # 5. Test Structured Ad Banner Layout (Banner / Title / Desc)
+    print("\n--- Test 5: Structured Ad Banner (Banner / Title / Desc) ---")
+    with urllib.request.urlopen(f"{base_url}/search?q=test") as resp:
+        assert resp.status == 200
+        content = resp.read().decode("utf-8")
+        assert "ad-banner-wrap" in content
+        assert "ad-title" in content
+        assert "ad-desc" in content
+        print("  Search page contains structured ad elements -> OK")
+    print("[OK] Structured ad banner layout verified!")
+
+    # 6. Test Site URL in Cite (Not full deep path) and No Wikipedia
+    print("\n--- Test 6: Site URL in Cite & No Wikipedia ---")
+    with urllib.request.urlopen(f"{base_url}/search?q=faero.top") as resp:
+        assert resp.status == 200
+        content = resp.read().decode("utf-8")
+        assert "<cite>faero.top</cite>" in content or "<cite>www.faero.top</cite>" in content
+        assert "wikipedia.org/wiki" not in content
+        print("  Clean site URL displayed in cite and no Wikipedia links -> OK")
+    print("[OK] Site URL and clean search verified!")
+
     # Shutdown
     server.shutdown()
     server.server_close()

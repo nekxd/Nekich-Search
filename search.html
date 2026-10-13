@@ -55,14 +55,22 @@
                     <div class="clean-pagination" id="pagination" style="display:none;"></div>
                 </td>
 
-                <!-- Right Column: Larger Rotating Ad Banner -->
+                <!-- Right Column: Structured Rotating Ad Banner (Баннер / Название / Описание) -->
                 <td class="results-right" id="results-right">
                     <div class="ad-sidebar" id="ad-box">
                         <div class="ad-label-top">Реклама</div>
-                        <a id="banner-link" href="#" target="_blank">
-                            <img id="banner-img" src="" alt="Реклама" class="ad-banner-img">
-                        </a>
-                        <div class="ad-caption" id="banner-caption"></div>
+                        <!-- 1. Баннер -->
+                        <div class="ad-banner-wrap">
+                            <a id="banner-link" href="#" target="_blank">
+                                <img id="banner-img" src="" alt="Реклама" class="ad-banner-img">
+                            </a>
+                        </div>
+                        <!-- 2. Название -->
+                        <div class="ad-title">
+                            <a id="banner-title-link" href="#" target="_blank"></a>
+                        </div>
+                        <!-- 3. Описание -->
+                        <div class="ad-desc" id="banner-desc"></div>
                     </div>
                 </td>
             </tr>
@@ -95,35 +103,35 @@
             copyEl.innerText = (curYear > 2026) ? "2026-" + curYear : "2026";
         }
 
-        // Banners Data (5 Rotating Banners)
+        // Banners Data (5 Rotating Banners with structured Name, Desc, Img, Target)
         var BANNERS = [
             {
                 name: "Inori Aizawa",
-                caption: "Inori Aizawa - Let's explore the web!",
+                desc: "Официальный маскот Internet Explorer в Азии. Let's explore the web!",
                 img_url: "http://faero.top/ad/inori.png",
                 target_url: "http://inori.faero.top"
             },
             {
                 name: "LunaStore",
-                caption: "LunaStore - Лучший магазин приложений для старых ПК (работает даже на IE6)",
+                desc: "Лучший магазин приложений для старых ПК. Работает даже на Windows XP и IE6!",
                 img_url: "http://faero.top/ad/ls_rek.png",
                 target_url: "http://lunastore.app"
             },
             {
                 name: "Renaissance",
-                caption: "Renaissance - мессенджер основанный на движке Агента@Mail.RU",
+                desc: "Классический мессенджер, основанный на легендарном движке Агента@Mail.RU.",
                 img_url: "http://faero.top/ad/mrim.jpg",
                 target_url: "http://mrim.su"
             },
             {
                 name: "FaeroFM",
-                caption: "FaeroFM - Old hits. Good memories.",
+                desc: "Old hits. Good memories. Онлайн-радиостанция с лучшими хитами прошлых лет.",
                 img_url: "http://faero.top/ad/faerofm.png",
                 target_url: "http://fm.faero.top"
             },
             {
                 name: "faero.top",
-                caption: "faero.top - Подари вторую жизнь своему браузеру из нулевых!",
+                desc: "Подари вторую жизнь своему браузеру из нулевых! Ретро-портал и каталог софта.",
                 img_url: "http://faero.top/ad/faero.png",
                 target_url: "http://faero.top"
             }
@@ -176,30 +184,44 @@
             var banner = BANNERS[bIdx];
             var bLink = document.getElementById("banner-link");
             var bImg = document.getElementById("banner-img");
-            var bCaption = document.getElementById("banner-caption");
-            if (bLink && bImg && bCaption) {
+            var bTitleLink = document.getElementById("banner-title-link");
+            var bDesc = document.getElementById("banner-desc");
+            if (bLink && bImg && bTitleLink && bDesc) {
                 bLink.href = banner.target_url;
                 bLink.title = banner.name;
                 bImg.src = banner.img_url;
-                bImg.alt = banner.caption;
-                bCaption.innerText = banner.caption;
+                bImg.alt = banner.name;
+                bTitleLink.href = banner.target_url;
+                bTitleLink.innerText = banner.name;
+                bDesc.innerText = banner.desc;
             }
         }
 
-        // Search Execution
-        var startTime = new Date().getTime();
-
-        function getFaviconUrl(url) {
+        // Clean site URL helper (displays only site domain, no deep page paths)
+        function cleanSiteUrl(url) {
             if (!url) return "";
             try {
                 var a = document.createElement('a');
                 a.href = url;
-                var host = a.hostname || url;
-                return "http://www.google.com/s2/favicons?domain=" + encodeURIComponent(host) + "&sz=16";
+                var host = a.hostname || "";
+                if (host.indexOf("www.") === 0) {
+                    host = host.substring(4);
+                }
+                return host || url;
             } catch(e) {
-                return "http://www.google.com/s2/favicons?domain=" + encodeURIComponent(url) + "&sz=16";
+                var m = url.match(/^https?:\/\/(?:www\.)?([^/?#]+)/i);
+                return m ? m[1] : url;
             }
         }
+
+        function getFaviconUrl(url) {
+            if (!url) return "";
+            var host = cleanSiteUrl(url);
+            return "http://www.google.com/s2/favicons?domain=" + encodeURIComponent(host) + "&sz=16";
+        }
+
+        // Search Execution
+        var startTime = new Date().getTime();
 
         function renderResults(items, zeroClick) {
             var elapsed = ((new Date().getTime() - startTime) / 1000).toFixed(2);
@@ -215,11 +237,12 @@
 
             if (zeroClick) {
                 var zcFav = getFaviconUrl(zeroClick.url);
+                var zcSite = cleanSiteUrl(zeroClick.url);
                 html += '<div class="g" style="border: 1px solid #ebebeb; padding: 12px; background: #fafafa; margin-bottom: 25px;">';
                 html += '<h3 class="r"><a href="' + escapeHtml(zeroClick.url) + '" target="_blank">' + escapeHtml(zeroClick.title) + '</a></h3>';
                 html += '<div class="kv">';
                 html += '<img src="' + escapeHtml(zcFav) + '" class="site-favicon" width="16" height="16" alt="" onerror="this.style.display=\'none\'">';
-                html += '<cite>' + escapeHtml(zeroClick.url) + '</cite>';
+                html += '<cite>' + escapeHtml(zcSite) + '</cite>';
                 html += '</div>';
                 html += '<span class="st">' + zeroClick.snippet + '</span>';
                 html += '</div>';
@@ -229,11 +252,12 @@
                 for (var i = 0; i < items.length; i++) {
                     var it = items[i];
                     var fav = getFaviconUrl(it.url);
+                    var site = cleanSiteUrl(it.url);
                     html += '<div class="g">';
                     html += '<h3 class="r"><a href="' + escapeHtml(it.url) + '" target="_blank">' + escapeHtml(it.title) + '</a></h3>';
                     html += '<div class="kv">';
                     html += '<img src="' + escapeHtml(fav) + '" class="site-favicon" width="16" height="16" alt="" onerror="this.style.display=\'none\'">';
-                    html += '<cite>' + escapeHtml(it.display_url || it.url) + '</cite>';
+                    html += '<cite>' + escapeHtml(site) + '</cite>';
                     html += '</div>';
                     html += '<span class="st">' + it.snippet + '</span>';
                     html += '</div>';
@@ -295,135 +319,149 @@
                 .replace(/"/g, '&quot;');
         }
 
-        // Fetch using Wikipedia OpenSearch + DuckDuckGo JSONP API
+        // Web search without Wikipedia (Real websites and services)
         function performSearch() {
             var collectedResults = [];
             var zeroClick = null;
+            var qLower = q.toLowerCase();
 
-            // 1. DuckDuckGo Instant Answer API via JSONP
+            // 1. Curated retro & popular web sites catalog
+            var KNOWN_SITES = [
+                { keys: ["faero.top", "faero", "faerofm", "fm.faero.top"], title: "faero.top - Подари вторую жизнь браузеру из нулевых!", url: "http://faero.top", snippet: "Ретро-портал, веб-сервисы и программы для старых браузеров и ПК." },
+                { keys: ["faerofm", "fm.faero.top", "faero fm"], title: "FaeroFM - Old hits. Good memories.", url: "http://fm.faero.top", snippet: "Онлайн-радиостанция с лучшими хитами прошлых лет. Ретро-музыка и ностальгия." },
+                { keys: ["inori", "aizawa", "inori aizawa"], title: "Inori Aizawa - Let's explore the web!", url: "http://inori.faero.top", snippet: "Официальный маскот Internet Explorer в Азии. Ретро-веб и браузерные приключения." },
+                { keys: ["lunastore", "lunastore.app", "luna store"], title: "LunaStore - Каталог приложений для старых ПК", url: "http://lunastore.app", snippet: "Лучший магазин приложений для Windows XP и старых ПК. Работает даже на IE6." },
+                { keys: ["mrim", "mrim.su", "renaissance", "агент", "agent"], title: "Мессенджер Renaissance", url: "http://mrim.su", snippet: "Классический мессенджер, основанный на легендарном движке Агента@Mail.RU." },
+                { keys: ["soap", "soap.nekxd.fun", "mail.ru", "мейл"], title: "Ретро Mail.RU 2014", url: "http://soap.nekxd.fun", snippet: "Фановый реборн классического портала Mail.RU образца 2014 года." },
+                { keys: ["nekxd", "nekxd.ru"], title: "Nekxd Projects", url: "http://nekxd.ru", snippet: "Проекты, эксперименты и ретро-сайты nekxd." },
+                { keys: ["yandex", "яндекс", "ya.ru"], title: "Ретро Яндекс (nekxd)", url: "http://nekxd.ru/yandex", snippet: "Эксперимент с интерфейсом классического Яндекса." },
+                { keys: ["ynd", "ynd.su"], title: "ynd.su - Обо мне", url: "http://ynd.su", snippet: "Персональный сайт разработчика Nekich Search." },
+                { keys: ["vk", "vk.com", "вконтакте", "вк"], title: "ВКонтакте - добро пожаловать", url: "http://vk.com", snippet: "Универсальное средство для поиска друзей и одноклассников. Социальная сеть." },
+                { keys: ["google", "гугл", "google.com"], title: "Google", url: "http://google.com", snippet: "Поисковая система Google. Быстрый поиск информации во всемирной паутине." },
+                { keys: ["youtube", "ютуб", "youtube.com"], title: "YouTube", url: "http://youtube.com", snippet: "Крупнейший видеохостинг. Смотрите любимые видео и делитесь ими с друзьями." },
+                { keys: ["github", "гитхаб", "github.com"], title: "GitHub - Build software better, together", url: "http://github.com", snippet: "Крупнейший веб-сервис для хостинга IT-проектов и совместной разработки ПО." },
+                { keys: ["4pda", "4pda.to", "пда"], title: "4PDA - Всё о мобильных устройствах", url: "http://4pda.to", snippet: "Новости, обзоры, каталог программ и форум о мобильной технике." },
+                { keys: ["old-dos", "olddos", "старые игры"], title: "Old-DOS.ru - Крупнейший архив старых программ", url: "http://old-dos.ru", snippet: "Архив старых программ для DOS, Windows 95, 98, 2000 и XP." },
+                { keys: ["rutracker", "рутрекер"], title: "RuTracker.org", url: "http://rutracker.org", snippet: "Крупнейший русскоязычный битторрент-трекер." },
+                { keys: ["habr", "хабр", "habrahabr"], title: "Хабр - Сообщество IT-специалистов", url: "http://habr.com", snippet: "Публикации об IT, программировании, дизайне, разработке и технологиях." }
+            ];
+
+            var matchedDirect = false;
+            for (var k = 0; k < KNOWN_SITES.length; k++) {
+                var entry = KNOWN_SITES[k];
+                for (var ki = 0; ki < entry.keys.length; ki++) {
+                    var key = entry.keys[ki];
+                    if (qLower === key || qLower.indexOf(key) !== -1 || key.indexOf(qLower) !== -1) {
+                        collectedResults.push({
+                            title: entry.title,
+                            url: entry.url,
+                            display_url: cleanSiteUrl(entry.url),
+                            snippet: entry.snippet
+                        });
+                        matchedDirect = true;
+                        break;
+                    }
+                }
+            }
+
+            // 2. Direct domain / URL match
+            if (/^[a-z0-9.-]+\.[a-z]{2,}(\/.*)?$/i.test(qLower)) {
+                var cleanHost = qLower.split('/')[0];
+                var directUrl = "http://" + qLower;
+                collectedResults.push({
+                    title: cleanHost + " - Официальный сайт",
+                    url: directUrl,
+                    display_url: cleanHost,
+                    snippet: "Перейти на веб-сайт " + cleanHost + ". Прямой доступ к ресурсу."
+                });
+            }
+
+            // 3. DuckDuckGo Instant Answer API (Official site links, NO Wikipedia)
             window.ddgCallback = function(data) {
                 if (data) {
-                    if (data.Abstract && data.AbstractURL) {
+                    // Official site results
+                    if (data.Results && data.Results.length > 0) {
+                        for (var i = 0; i < data.Results.length; i++) {
+                            var r = data.Results[i];
+                            if (r.FirstURL && r.FirstURL.indexOf("wikipedia.org") === -1) {
+                                collectedResults.push({
+                                    title: r.Text || (cleanSiteUrl(r.FirstURL) + " - Официальный сайт"),
+                                    url: r.FirstURL,
+                                    display_url: cleanSiteUrl(r.FirstURL),
+                                    snippet: "Официальный сайт " + cleanSiteUrl(r.FirstURL) + "."
+                                });
+                            }
+                        }
+                    }
+
+                    // Zero-click box (only if NOT Wikipedia)
+                    if (data.Heading && data.Abstract && data.AbstractURL && data.AbstractURL.indexOf("wikipedia.org") === -1) {
                         zeroClick = {
-                            title: data.Heading || q,
+                            title: data.Heading,
                             url: data.AbstractURL,
                             snippet: data.Abstract
                         };
                     }
+
+                    // Related external site topics (strictly NO Wikipedia)
                     if (data.RelatedTopics && data.RelatedTopics.length > 0) {
-                        for (var i = 0; i < data.RelatedTopics.length; i++) {
-                            var t = data.RelatedTopics[i];
-                            if (t.FirstURL && t.Text) {
+                        for (var j = 0; j < data.RelatedTopics.length; j++) {
+                            var t = data.RelatedTopics[j];
+                            if (t.Topics) {
+                                for (var ti = 0; ti < t.Topics.length; ti++) {
+                                    var sub = t.Topics[ti];
+                                    if (sub.FirstURL && sub.FirstURL.indexOf("wikipedia.org") === -1 && sub.FirstURL.indexOf("wiktionary.org") === -1) {
+                                        collectedResults.push({
+                                            title: sub.Text ? sub.Text.split(' - ')[0] : cleanSiteUrl(sub.FirstURL),
+                                            url: sub.FirstURL,
+                                            display_url: cleanSiteUrl(sub.FirstURL),
+                                            snippet: sub.Text || ("Сайт " + cleanSiteUrl(sub.FirstURL))
+                                        });
+                                    }
+                                }
+                            } else if (t.FirstURL && t.FirstURL.indexOf("wikipedia.org") === -1 && t.FirstURL.indexOf("wiktionary.org") === -1) {
                                 collectedResults.push({
-                                    title: t.Text.split(' - ')[0] || t.Text,
+                                    title: t.Text ? t.Text.split(' - ')[0] : cleanSiteUrl(t.FirstURL),
                                     url: t.FirstURL,
-                                    display_url: t.FirstURL,
-                                    snippet: t.Text
+                                    display_url: cleanSiteUrl(t.FirstURL),
+                                    snippet: t.Text || ("Сайт " + cleanSiteUrl(t.FirstURL))
                                 });
                             }
                         }
                     }
                 }
-                fetchWiki();
+                finishSearch();
             };
 
             var ddgScript = document.createElement("script");
-            ddgScript.src = "https://api.duckduckgo.com/?q=" + encodeURIComponent(q) + "&format=json&callback=ddgCallback&no_html=1&skip_disambig=1";
+            ddgScript.src = "https://api.duckduckgo.com/?q=" + encodeURIComponent(q) + "&format=json&callback=ddgCallback&no_html=1&skip_disambig=0";
             ddgScript.onerror = function() {
-                fetchWiki();
+                finishSearch();
             };
             document.body.appendChild(ddgScript);
 
-            // 2. Wikipedia Search API
-            function fetchWiki() {
-                var wikiUrl = "https://ru.wikipedia.org/w/api.php?action=opensearch&search=" + encodeURIComponent(q) + "&limit=10&namespace=0&format=json&origin=*";
-                var xhr = new XMLHttpRequest();
-                xhr.open("GET", wikiUrl, true);
-                xhr.onreadystatechange = function() {
-                    if (xhr.readyState === 4) {
-                        if (xhr.status === 200) {
-                            try {
-                                var data = JSON.parse(xhr.responseText);
-                                var titles = data[1] || [];
-                                var snippets = data[2] || [];
-                                var urls = data[3] || [];
-                                for (var i = 0; i < titles.length; i++) {
-                                    collectedResults.push({
-                                        title: titles[i],
-                                        url: urls[i],
-                                        display_url: urls[i],
-                                        snippet: snippets[i] || "Подробнее читайте в статье на Википедии..."
-                                    });
-                                }
-                            } catch(e) {}
-                        }
-                        
-                        // If no results from RU wiki, try EN wiki
-                        if (collectedResults.length === 0 && !zeroClick) {
-                            fetchEnWiki();
-                        } else {
-                            finishSearch();
-                        }
-                    }
-                };
-                xhr.onerror = function() {
-                    finishSearch();
-                };
-                xhr.send();
-            }
-
-            function fetchEnWiki() {
-                var wikiUrl = "https://en.wikipedia.org/w/api.php?action=opensearch&search=" + encodeURIComponent(q) + "&limit=10&namespace=0&format=json&origin=*";
-                var xhr = new XMLHttpRequest();
-                xhr.open("GET", wikiUrl, true);
-                xhr.onreadystatechange = function() {
-                    if (xhr.readyState === 4) {
-                        if (xhr.status === 200) {
-                            try {
-                                var data = JSON.parse(xhr.responseText);
-                                var titles = data[1] || [];
-                                var snippets = data[2] || [];
-                                var urls = data[3] || [];
-                                for (var i = 0; i < titles.length; i++) {
-                                    collectedResults.push({
-                                        title: titles[i],
-                                        url: urls[i],
-                                        display_url: urls[i],
-                                        snippet: snippets[i] || "Read more on Wikipedia..."
-                                    });
-                                }
-                            } catch(e) {}
-                        }
-                        finishSearch();
-                    }
-                };
-                xhr.onerror = function() {
-                    finishSearch();
-                };
-                xhr.send();
-            }
-
             function finishSearch() {
-                // Remove duplicates
+                // Deduplicate items by host / url
                 var seen = {};
                 var unique = [];
                 for (var i = 0; i < collectedResults.length; i++) {
                     var item = collectedResults[i];
-                    if (!seen[item.url]) {
-                        seen[item.url] = true;
+                    var uNorm = item.url.toLowerCase().replace(/^https?:\/\//, '').replace(/\/$/, '');
+                    if (!seen[uNorm]) {
+                        seen[uNorm] = true;
                         unique.push(item);
                     }
                 }
                 renderResults(unique, zeroClick);
             }
 
-            // Fallback timeout in case of network issues
+            // Fallback timeout
             setTimeout(function() {
                 var listEl = document.getElementById("results-list");
-                if (listEl && listEl.innerText.indexOf("Загрузка") !== -1) {
+                if (listEl && listEl.innerText.indexOf("Поиск по запросу") !== -1) {
                     finishSearch();
                 }
-            }, 3500);
+            }, 3000);
         }
 
         performSearch();

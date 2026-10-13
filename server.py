@@ -34,30 +34,35 @@ from http import cookies
 BANNERS = [
     {
         "name": "Inori Aizawa",
+        "desc": "Официальный маскот Internet Explorer в Азии. Let's explore the web!",
         "caption": "Inori Aizawa - Let's explore the web!",
         "img_url": "http://faero.top/ad/inori.png",
         "target_url": "http://inori.faero.top"
     },
     {
         "name": "LunaStore",
+        "desc": "Лучший магазин приложений для старых ПК (работает даже на Windows XP и IE6).",
         "caption": "LunaStore - Лучший магазин приложений для старых ПК (работает даже на IE6)",
         "img_url": "http://faero.top/ad/ls_rek.png",
         "target_url": "http://lunastore.app"
     },
     {
         "name": "Renaissance",
+        "desc": "Классический мессенджер, основанный на движке легендарного Агента@Mail.RU.",
         "caption": "Renaissance - мессенджер основанный на движке Агента@Mail.RU",
         "img_url": "http://faero.top/ad/mrim.jpg",
         "target_url": "http://mrim.su"
     },
     {
         "name": "FaeroFM",
+        "desc": "Old hits. Good memories. Онлайн-радиостанция с лучшими хитами прошлых лет.",
         "caption": "FaeroFM - Old hits. Good memories.",
         "img_url": "http://faero.top/ad/faerofm.png",
         "target_url": "http://fm.faero.top"
     },
     {
         "name": "faero.top",
+        "desc": "Подари вторую жизнь своему браузеру из нулевых! Ретро-портал и каталог софта.",
         "caption": "faero.top - Подари вторую жизнь своему браузеру из нулевых!",
         "img_url": "http://faero.top/ad/faero.png",
         "target_url": "http://faero.top"
@@ -111,141 +116,191 @@ def get_next_banner_info():
         return idx, BANNERS[idx]
 
 
+def extract_site_url(url):
+    try:
+        parsed = urllib.parse.urlparse(url)
+        host = parsed.netloc or url
+        if host.startswith("www."):
+            host = host[4:]
+        return host
+    except Exception:
+        return url
+
+
 def fetch_duckduckgo_results(query, page=1):
-    """Fetches web search results with DuckDuckGo API, HTML parser, and robust fallback."""
+    """Fetches real web search results without Wikipedia, optimized for retro search."""
     results = []
     zero_click = None
     ctx = ssl.create_default_context()
+    q_lower = query.strip().lower()
 
-    # 1. DuckDuckGo Instant Answer API
+    # Direct site check (e.g. faero.top, vk.com, soap.nekxd.fun, etc.)
+    KNOWN_SITES = {
+        "faero.top": ("faero.top - Подари вторую жизнь браузеру из нулевых!", "http://faero.top", "Ретро-портал, сервисы и программы для старых браузеров и ПК."),
+        "faero": ("faero.top - Подари вторую жизнь браузеру из нулевых!", "http://faero.top", "Ретро-портал, сервисы и программы для старых браузеров и ПК."),
+        "faerofm": ("FaeroFM - Old hits. Good memories.", "http://fm.faero.top", "Онлайн-радиостанция с лучшими хитами прошлых лет."),
+        "inori": ("Inori Aizawa - Let's explore the web!", "http://inori.faero.top", "Официальный маскот Internet Explorer в Азии."),
+        "lunastore": ("LunaStore - Каталог приложений для старых ПК", "http://lunastore.app", "Лучший магазин приложений для Windows XP и старых компьютеров."),
+        "lunastore.app": ("LunaStore - Каталог приложений для старых ПК", "http://lunastore.app", "Лучший магазин приложений для Windows XP и старых компьютеров."),
+        "mrim": ("Мессенджер Renaissance", "http://mrim.su", "Классический мессенджер на легендарном движке Агента@Mail.RU."),
+        "mrim.su": ("Мессенджер Renaissance", "http://mrim.su", "Классический мессенджер на легендарном движке Агента@Mail.RU."),
+        "soap": ("Ретро Mail.RU 2014", "http://soap.nekxd.fun", "Фановый реборн классического портала Mail.RU."),
+        "soap.nekxd.fun": ("Ретро Mail.RU 2014", "http://soap.nekxd.fun", "Фановый реборн классического портала Mail.RU."),
+        "nekxd.ru": ("Nekxd Projects", "http://nekxd.ru", "Проекты и эксперименты nekxd."),
+        "ynd.su": ("ynd.su - Обо мне", "http://ynd.su", "Персональный сайт разработчика Nekich Search."),
+        "vk": ("ВКонтакте - добро пожаловать", "http://vk.com", "Универсальное средство для поиска друзей и одноклассников."),
+        "vk.com": ("ВКонтакте - добро пожаловать", "http://vk.com", "Универсальное средство для поиска друзей и одноклассников."),
+        "yandex": ("Яндекс", "http://ya.ru", "Поисковая система и интернет-портал. Найдётся всё."),
+        "google": ("Google", "http://google.com", "Поиск в Интернете, карты, почта и многое другое."),
+        "github": ("GitHub", "http://github.com", "Крупнейший веб-сервис для хостинга IT-проектов и совместной разработки."),
+        "4pda": ("4PDA - Всё о мобильных устройствах", "http://4pda.to", "Новости, обзоры, каталог программ и форум.")
+    }
+
+    if q_lower in KNOWN_SITES:
+        title, url, snip = KNOWN_SITES[q_lower]
+        results.append({
+            "title": title,
+            "url": url,
+            "display_url": extract_site_url(url),
+            "snippet": snip
+        })
+    elif re.match(r'^[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}(/.*)?$', q_lower):
+        clean_d = q_lower.split('/')[0]
+        results.append({
+            "title": f"{clean_d} - Официальный сайт",
+            "url": f"http://{q_lower}",
+            "display_url": clean_d,
+            "snippet": f"Перейти на веб-сайт {clean_d}. Прямой доступ."
+        })
+
+    # 1. DuckDuckGo Instant Answer API (Official site results)
     try:
         api_url = f"https://api.duckduckgo.com/?q={urllib.parse.quote(query)}&format=json&no_html=0&skip_disambig=0"
         headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"}
         req = urllib.request.Request(api_url, headers=headers)
         with urllib.request.urlopen(req, context=ctx, timeout=6) as r:
             ddg_json = json.loads(r.read().decode("utf-8"))
-            if ddg_json.get("Heading") and ddg_json.get("Abstract"):
-                zero_click = {
-                    "title": ddg_json["Heading"],
-                    "url": ddg_json.get("AbstractURL", f"https://duckduckgo.com/?q={urllib.parse.quote(query)}"),
-                    "snippet": ddg_json["Abstract"]
-                }
+            for res_item in ddg_json.get("Results", []):
+                f_url = res_item.get("FirstURL", "")
+                f_text = res_item.get("Text", "")
+                if f_url and "wikipedia.org" not in f_url:
+                    results.append({
+                        "title": f_text or query,
+                        "url": f_url,
+                        "display_url": extract_site_url(f_url),
+                        "snippet": f"Официальный сайт {extract_site_url(f_url)}."
+                    })
+
             for topic in ddg_json.get("RelatedTopics", []):
                 if "Topics" in topic:
                     for sub in topic["Topics"]:
                         if "FirstURL" in sub and "Text" in sub:
                             first_url = sub["FirstURL"]
+                            if "wikipedia.org" in first_url or "wiktionary.org" in first_url:
+                                continue
                             text = sub["Text"]
                             title_part = text.split(" - ")[0] if " - " in text else text[:50]
                             results.append({
                                 "title": title_part,
                                 "url": first_url,
-                                "display_url": first_url,
+                                "display_url": extract_site_url(first_url),
                                 "snippet": text
                             })
                 elif "FirstURL" in topic and "Text" in topic:
                     first_url = topic["FirstURL"]
+                    if "wikipedia.org" in first_url or "wiktionary.org" in first_url:
+                        continue
                     text = topic["Text"]
                     title_part = text.split(" - ")[0] if " - " in text else text[:50]
                     results.append({
                         "title": title_part,
                         "url": first_url,
-                        "display_url": first_url,
+                        "display_url": extract_site_url(first_url),
                         "snippet": text
                     })
     except Exception:
         pass
 
-    # 2. DuckDuckGo HTML parser
-    if len(results) < 5:
-        try:
-            url = "https://html.duckduckgo.com/html/"
-            data = {"q": query}
-            if page > 1:
-                data["s"] = str((page - 1) * 30)
-                data["dc"] = str((page - 1) * 30 + 1)
-            headers = {
-                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-                "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-                "Accept-Language": "ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7",
-                "Content-Type": "application/x-www-form-urlencoded"
-            }
-            encoded_data = urllib.parse.urlencode(data).encode("utf-8")
-            req = urllib.request.Request(url, data=encoded_data, headers=headers)
-            with urllib.request.urlopen(req, context=ctx, timeout=8) as resp:
-                html_content = resp.read().decode("utf-8", errors="ignore")
+    # 2. DuckDuckGo HTML parser for real web search
+    try:
+        url = "https://html.duckduckgo.com/html/"
+        data = {"q": query}
+        if page > 1:
+            data["s"] = str((page - 1) * 30)
+            data["dc"] = str((page - 1) * 30 + 1)
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+            "Accept-Language": "ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7",
+            "Content-Type": "application/x-www-form-urlencoded"
+        }
+        encoded_data = urllib.parse.urlencode(data).encode("utf-8")
+        req = urllib.request.Request(url, data=encoded_data, headers=headers)
+        with urllib.request.urlopen(req, context=ctx, timeout=8) as resp:
+            html_content = resp.read().decode("utf-8", errors="ignore")
 
-            items = re.findall(r'<div class="result results_links results_links_deep web-result\s*">(.*?)<div class="clear"></div>\s*</div>', html_content, re.DOTALL)
-            if not items:
-                items = re.findall(r'<div class="links_main links_deep result__body">(.*?)<div class="clear"></div>', html_content, re.DOTALL)
+        items = re.findall(r'<div class="result results_links results_links_deep web-result\s*">(.*?)<div class="clear"></div>\s*</div>', html_content, re.DOTALL)
+        if not items:
+            items = re.findall(r'<div class="links_main links_deep result__body">(.*?)<div class="clear"></div>', html_content, re.DOTALL)
 
-            for item in items:
-                title_m = re.search(r'<a[^>]*class="result__a"[^>]*href="([^"]+)"[^>]*>(.*?)</a>', item, re.DOTALL)
-                if not title_m:
-                    title_m = re.search(r'<h2 class="result__title">\s*<a[^>]*href="([^"]+)"[^>]*>(.*?)</a>', item, re.DOTALL)
-                snippet_m = re.search(r'<a[^>]*class="result__snippet"[^>]*>(.*?)</a>', item, re.DOTALL)
-                if not snippet_m:
-                    snippet_m = re.search(r'<div[^>]*class="result__snippet"[^>]*>(.*?)</div>', item, re.DOTALL)
-                url_display_m = re.search(r'<a[^>]*class="result__url"[^>]*>(.*?)</a>', item, re.DOTALL)
+        for item in items:
+            title_m = re.search(r'<a[^>]*class="result__a"[^>]*href="([^"]+)"[^>]*>(.*?)</a>', item, re.DOTALL)
+            if not title_m:
+                title_m = re.search(r'<h2 class="result__title">\s*<a[^>]*href="([^"]+)"[^>]*>(.*?)</a>', item, re.DOTALL)
+            snippet_m = re.search(r'<a[^>]*class="result__snippet"[^>]*>(.*?)</a>', item, re.DOTALL)
+            if not snippet_m:
+                snippet_m = re.search(r'<div[^>]*class="result__snippet"[^>]*>(.*?)</div>', item, re.DOTALL)
 
-                if title_m:
-                    raw_url = title_m.group(1)
-                    raw_title = title_m.group(2)
-                    real_url = raw_url
-                    if "uddg=" in raw_url:
-                        parsed_q = urllib.parse.parse_qs(urllib.parse.urlparse(raw_url).query)
-                        if "uddg" in parsed_q:
-                            real_url = parsed_q["uddg"][0]
-                    elif raw_url.startswith("//duckduckgo.com/l/?") or raw_url.startswith("/l/?"):
-                        parsed_q = urllib.parse.parse_qs(urllib.parse.urlparse("https:" + raw_url).query)
-                        if "uddg" in parsed_q:
-                            real_url = parsed_q["uddg"][0]
+            if title_m:
+                raw_url = title_m.group(1)
+                raw_title = title_m.group(2)
+                real_url = raw_url
+                if "uddg=" in raw_url:
+                    parsed_q = urllib.parse.parse_qs(urllib.parse.urlparse(raw_url).query)
+                    if "uddg" in parsed_q:
+                        real_url = parsed_q["uddg"][0]
+                elif raw_url.startswith("//duckduckgo.com/l/?") or raw_url.startswith("/l/?"):
+                    parsed_q = urllib.parse.parse_qs(urllib.parse.urlparse("https:" + raw_url).query)
+                    if "uddg" in parsed_q:
+                        real_url = parsed_q["uddg"][0]
 
-                    clean_title = html.unescape(re.sub(r'<[^>]+>', '', raw_title)).strip()
-                    clean_snippet = ""
-                    if snippet_m:
-                        clean_snippet = html.unescape(snippet_m.group(1)).strip()
-                        clean_snippet = re.sub(r'<(?!/?(b|em|strong)\b)[^>]+>', '', clean_snippet)
+                # Filter out Wikipedia as requested
+                if "wikipedia.org" in real_url or "wiktionary.org" in real_url:
+                    continue
 
-                    clean_display_url = html.unescape(re.sub(r'<[^>]+>', '', url_display_m.group(1))).strip() if url_display_m else real_url
-                    results.append({
-                        "title": clean_title,
-                        "url": real_url,
-                        "display_url": clean_display_url,
-                        "snippet": clean_snippet
-                    })
-        except Exception:
-            pass
+                clean_title = html.unescape(re.sub(r'<[^>]+>', '', raw_title)).strip()
+                clean_snippet = ""
+                if snippet_m:
+                    clean_snippet = html.unescape(snippet_m.group(1)).strip()
+                    clean_snippet = re.sub(r'<(?!/?(b|em|strong)\b)[^>]+>', '', clean_snippet)
 
-    # 3. Wikipedia OpenSearch fallback
-    if len(results) < 2:
-        try:
-            wiki_url = f"https://ru.wikipedia.org/w/api.php?action=opensearch&search={urllib.parse.quote(query)}&limit=10&namespace=0&format=json"
-            req = urllib.request.Request(wiki_url, headers={"User-Agent": "NekichSearch/1.0"})
-            with urllib.request.urlopen(req, context=ctx, timeout=5) as r:
-                wdata = json.loads(r.read().decode("utf-8"))
-                if len(wdata) >= 4 and wdata[1]:
-                    for i in range(len(wdata[1])):
-                        t = wdata[1][i]
-                        sn = wdata[2][i] if i < len(wdata[2]) else ""
-                        u = wdata[3][i] if i < len(wdata[3]) else ""
-                        if u:
-                            results.append({
-                                "title": t,
-                                "url": u,
-                                "display_url": u,
-                                "snippet": sn
-                            })
-        except Exception:
-            pass
+                clean_display_url = extract_site_url(real_url)
+                results.append({
+                    "title": clean_title,
+                    "url": real_url,
+                    "display_url": clean_display_url,
+                    "snippet": clean_snippet
+                })
+    except Exception:
+        pass
+
+    # Deduplicate results by URL
+    seen_urls = set()
+    unique_results = []
+    for r in results:
+        u_norm = r["url"].rstrip("/")
+        if u_norm not in seen_urls:
+            seen_urls.add(u_norm)
+            unique_results.append(r)
+    results = unique_results
 
     # Attach favicon URLs for all items
     if zero_click and "favicon_url" not in zero_click:
-        zc_domain = urllib.parse.urlparse(zero_click.get("url", "")).netloc or "duckduckgo.com"
+        zc_domain = extract_site_url(zero_click.get("url", "")) or "duckduckgo.com"
         zero_click["favicon_url"] = f"http://www.google.com/s2/favicons?domain={urllib.parse.quote(zc_domain)}&sz=16"
 
     for it in results:
-        it_domain = urllib.parse.urlparse(it.get("url", "")).netloc or it.get("display_url", "")
+        it_domain = it.get("display_url") or extract_site_url(it.get("url", ""))
         it["favicon_url"] = f"http://www.google.com/s2/favicons?domain={urllib.parse.quote(it_domain)}&sz=16"
 
     return {"zero_click": zero_click, "results": results}
@@ -643,6 +698,7 @@ class NekichSearchHandler(http.server.BaseHTTPRequestHandler):
             "ads_disabled": ads_disabled,
             "banner_idx": b_idx,
             "banner_name": banner["name"],
+            "banner_desc": banner.get("desc", banner["caption"]),
             "banner_caption": banner["caption"],
             "banner_target": banner["target_url"],
             "copyright_years": get_copyright_years(),
