@@ -476,3 +476,262 @@ cite {
 .search-footer a:hover {
     color: #333333;
 }
+
+/* ========================================================= */
+/* Mobile Responsive Version (Smartphones & Tablets <= 768px) */
+/* Old browsers (IE6-IE8) ignore @media and keep desktop UI  */
+/* ========================================================= */
+@media screen and (max-width: 768px) {
+    /* Homepage */
+    body.hp-body {
+        padding: 0;
+        margin: 0;
+        text-align: center;
+        min-width: 100%;
+    }
+
+    .hp-main {
+        margin-top: 45px;
+        padding: 0 15px;
+    }
+
+    .hp-logo {
+        max-width: 210px;
+        height: auto;
+        margin-bottom: 20px;
+    }
+
+    .hp-search-box-wrap {
+        width: 100%;
+        max-width: 100%;
+        margin: 0 auto;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    .hp-search-input {
+        width: 100%;
+        max-width: 100%;
+        height: 40px;
+        line-height: 40px;
+        font-size: 16px;
+        box-sizing: border-box;
+    }
+
+    .hp-buttons {
+        margin-top: 16px;
+    }
+
+    .hp-buttons .btn {
+        margin: 5px 3px;
+        padding: 0 14px;
+        height: 36px;
+        line-height: 34px;
+        font-size: 13px;
+    }
+
+    .hp-footer {
+        position: static;
+        min-width: 100%;
+        width: 100%;
+        margin-top: 50px;
+        padding: 12px 10px;
+        line-height: 24px;
+        box-sizing: border-box;
+    }
+
+    .hp-footer-content {
+        padding: 0 5px;
+    }
+
+    .hp-footer .fl,
+    .hp-footer .fr {
+        float: none;
+        text-align: center;
+        display: block;
+        margin: 6px 0;
+    }
+
+    .hp-footer a {
+        display: inline-block;
+        margin: 4px 8px;
+    }
+
+    /* Search Results Header */
+    .search-header {
+        padding: 12px 10px;
+    }
+
+    .header-table,
+    .header-table tbody,
+    .header-table tr {
+        display: block;
+        width: 100%;
+    }
+
+    .header-logo-cell {
+        display: block;
+        width: 100%;
+        padding: 0 0 10px 0;
+        text-align: center;
+    }
+
+    .header-logo-cell a img {
+        width: 110px;
+        height: auto;
+    }
+
+    .header-search-cell {
+        display: block;
+        width: 100%;
+        padding: 0;
+        text-align: center;
+    }
+
+    .search-form-wrap {
+        display: block;
+        width: 100%;
+        max-width: 100%;
+        white-space: nowrap;
+    }
+
+    .search-input-header {
+        width: calc(100% - 64px);
+        max-width: calc(100% - 64px);
+        height: 36px;
+        line-height: 36px;
+        font-size: 15px;
+        box-sizing: border-box;
+        vertical-align: middle;
+    }
+
+    .search-btn-header {
+        width: 54px;
+        height: 36px;
+        vertical-align: middle;
+        box-sizing: border-box;
+    }
+
+    /* Search Results Container */
+    .results-container {
+        padding: 12px 15px 30px 15px;
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+    }
+
+    .result-stats {
+        margin-bottom: 14px;
+        font-size: 12px;
+    }
+
+    .results-table,
+    .results-table tbody,
+    .results-table tr {
+        display: block;
+        width: 100% !important;
+        max-width: 100% !important;
+        table-layout: auto !important;
+    }
+
+    .results-left {
+        display: block !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        padding-right: 0 !important;
+        box-sizing: border-box !important;
+    }
+
+    .g {
+        max-width: 100%;
+        margin-bottom: 22px;
+    }
+
+    .r {
+        font-size: 16px;
+        line-height: 1.3;
+    }
+
+    .kv {
+        max-width: 100%;
+    }
+
+    cite {
+        max-width: calc(100% - 30px);
+    }
+
+    .st {
+        max-width: 100%;
+        font-size: 13px;
+        line-height: 1.45;
+    }
+
+    /* Mobile Ad Sidebar: moves neatly below results */
+    .results-right {
+        display: block !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        margin-top: 25px !important;
+    }
+
+    .ad-sidebar {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 auto 20px auto !important;
+        box-sizing: border-box !important;
+        padding: 14px;
+    }
+
+    .ad-banner-img {
+        max-width: 100% !important;
+        height: auto !important;
+    }
+
+    /* Mobile Search Footer */
+    .search-footer {
+        padding: 15px 10px;
+        text-align: center;
+        box-sizing: border-box;
+    }
+
+    .search-footer .fl,
+    .search-footer .fr {
+        float: none;
+        text-align: center;
+        display: block;
+        margin: 6px 0;
+    }
+
+    .search-footer a {
+        display: inline-block;
+        margin: 4px 8px;
+    }
+
+    /* Mobile Subpages */
+    .subpage-header {
+        padding: 12px 15px;
+        text-align: center;
+    }
+
+    .subpage-header-title {
+        display: block;
+        margin: 8px 0 0 0;
+        font-size: 18px;
+    }
+
+    .subpage-container {
+        margin: 15px auto;
+        padding: 0 10px;
+        max-width: 100%;
+        box-sizing: border-box;
+    }
+
+    .content-card {
+        padding: 20px 15px;
+    }
+
+    .content-heading {
+        font-size: 18px;
+    }
+}

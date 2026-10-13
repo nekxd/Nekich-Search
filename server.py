@@ -297,11 +297,11 @@ def fetch_duckduckgo_results(query, page=1):
     # Attach favicon URLs for all items
     if zero_click and "favicon_url" not in zero_click:
         zc_domain = extract_site_url(zero_click.get("url", "")) or "duckduckgo.com"
-        zero_click["favicon_url"] = f"http://www.google.com/s2/favicons?domain={urllib.parse.quote(zc_domain)}&sz=16"
+        zero_click["favicon_url"] = f"//www.google.com/s2/favicons?domain={urllib.parse.quote(zc_domain)}&sz=16"
 
     for it in results:
         it_domain = it.get("display_url") or extract_site_url(it.get("url", ""))
-        it["favicon_url"] = f"http://www.google.com/s2/favicons?domain={urllib.parse.quote(it_domain)}&sz=16"
+        it["favicon_url"] = f"//www.google.com/s2/favicons?domain={urllib.parse.quote(it_domain)}&sz=16"
 
     return {"zero_click": zero_click, "results": results}
 

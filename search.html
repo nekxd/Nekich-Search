@@ -2,6 +2,7 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nekich Search</title>
     <link rel="shortcut icon" href="static/favicon.ico" type="image/x-icon">
     <link rel="icon" href="static/favicon.ico" type="image/x-icon">
@@ -157,9 +158,12 @@
         var inputEl = document.getElementById("query-input");
         if (inputEl) inputEl.value = q;
 
+        var isHttps = (window.location.protocol === "https:");
+        var httpProto = isHttps ? "https:" : "http:";
+
         // "Мне повезёт!" Auto-redirect
         if (btnI !== null) {
-            window.location.href = "https://duckduckgo.com/?q=!+" + encodeURIComponent(q);
+            window.location.href = httpProto + "//duckduckgo.com/?q=!+" + encodeURIComponent(q);
             return;
         }
 
@@ -217,7 +221,7 @@
         function getFaviconUrl(url) {
             if (!url) return "";
             var host = cleanSiteUrl(url);
-            return "http://www.google.com/s2/favicons?domain=" + encodeURIComponent(host) + "&sz=16";
+            return httpProto + "//www.google.com/s2/favicons?domain=" + encodeURIComponent(host) + "&sz=16";
         }
 
         // Search Execution
@@ -271,7 +275,7 @@
                 html += '<li>Попробуйте использовать другие ключевые слова.</li>';
                 html += '<li>Попробуйте использовать более популярные ключевые слова.</li>';
                 html += '</ul>';
-                html += '<p style="margin-top:20px;"><a href="https://duckduckgo.com/?q=' + encodeURIComponent(q) + '" target="_blank" class="btn" style="display:inline-block; line-height:34px; text-decoration:none;">Искать «' + escapeHtml(q) + '» в DuckDuckGo &rarr;</a></p>';
+                html += '<p style="margin-top:20px;"><a href="' + httpProto + '//duckduckgo.com/?q=' + encodeURIComponent(q) + '" target="_blank" class="btn" style="display:inline-block; line-height:34px; text-decoration:none;">Искать «' + escapeHtml(q) + '» в DuckDuckGo &rarr;</a></p>';
                 html += '</div>';
             }
 
@@ -279,9 +283,9 @@
             if (items.length > 0) {
                 html += '<div style="margin-top: 30px; padding: 15px; background: #f9f9f9; border: 1px solid #eee; border-radius: 2px;">';
                 html += '<div style="font-weight: bold; margin-bottom: 8px; color: #444;">Искать на других поисковых системах:</div>';
-                html += '<a href="https://duckduckgo.com/?q=' + encodeURIComponent(q) + '" target="_blank" style="margin-right: 15px;">DuckDuckGo</a> ';
-                html += '<a href="https://www.google.com/search?q=' + encodeURIComponent(q) + '" target="_blank" style="margin-right: 15px;">Google</a> ';
-                html += '<a href="https://yandex.ru/search/?text=' + encodeURIComponent(q) + '" target="_blank">Яндекс</a>';
+                html += '<a href="' + httpProto + '//duckduckgo.com/?q=' + encodeURIComponent(q) + '" target="_blank" style="margin-right: 15px;">DuckDuckGo</a> ';
+                html += '<a href="' + httpProto + '//www.google.com/search?q=' + encodeURIComponent(q) + '" target="_blank" style="margin-right: 15px;">Google</a> ';
+                html += '<a href="' + httpProto + '//yandex.ru/search/?text=' + encodeURIComponent(q) + '" target="_blank">Яндекс</a>';
                 html += '</div>';
             }
 
@@ -434,7 +438,7 @@
             };
 
             var ddgScript = document.createElement("script");
-            ddgScript.src = "https://api.duckduckgo.com/?q=" + encodeURIComponent(q) + "&format=json&callback=ddgCallback&no_html=1&skip_disambig=0";
+            ddgScript.src = httpProto + "//api.duckduckgo.com/?q=" + encodeURIComponent(q) + "&format=json&callback=ddgCallback&no_html=1&skip_disambig=0";
             ddgScript.onerror = function() {
                 finishSearch();
             };
