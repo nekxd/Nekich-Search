@@ -329,25 +329,63 @@
             var zeroClick = null;
             var qLower = q.toLowerCase();
 
-            // 1. Curated retro & popular web sites catalog
+            // 1. Curated retro & popular web services catalog with intent matching
             var KNOWN_SITES = [
+                // Retro Ecosystem & nekxd projects
                 { keys: ["faero.top", "faero", "faerofm", "fm.faero.top"], title: "faero.top - Подари вторую жизнь браузеру из нулевых!", url: "http://faero.top", snippet: "Ретро-портал, веб-сервисы и программы для старых браузеров и ПК." },
                 { keys: ["faerofm", "fm.faero.top", "faero fm"], title: "FaeroFM - Old hits. Good memories.", url: "http://fm.faero.top", snippet: "Онлайн-радиостанция с лучшими хитами прошлых лет. Ретро-музыка и ностальгия." },
                 { keys: ["inori", "aizawa", "inori aizawa"], title: "Inori Aizawa - Let's explore the web!", url: "http://inori.faero.top", snippet: "Официальный маскот Internet Explorer в Азии. Ретро-веб и браузерные приключения." },
                 { keys: ["lunastore", "lunastore.app", "luna store"], title: "LunaStore - Каталог приложений для старых ПК", url: "http://lunastore.app", snippet: "Лучший магазин приложений для Windows XP и старых ПК. Работает даже на IE6." },
                 { keys: ["mrim", "mrim.su", "renaissance", "агент", "agent"], title: "Мессенджер Renaissance", url: "http://mrim.su", snippet: "Классический мессенджер, основанный на легендарном движке Агента@Mail.RU." },
-                { keys: ["soap", "soap.nekxd.fun", "mail.ru", "мейл"], title: "Ретро Mail.RU 2014", url: "http://soap.nekxd.fun", snippet: "Фановый реборн классического портала Mail.RU образца 2014 года." },
+                { keys: ["soap", "soap.nekxd.fun", "soap.nekxd"], title: "Ретро Mail.RU 2014", url: "http://soap.nekxd.fun", snippet: "Фановый реборн классического портала Mail.RU образца 2014 года." },
                 { keys: ["nekxd", "nekxd.ru"], title: "Nekxd Projects", url: "http://nekxd.ru", snippet: "Проекты, эксперименты и ретро-сайты nekxd." },
-                { keys: ["yandex", "яндекс", "ya.ru"], title: "Ретро Яндекс (nekxd)", url: "http://nekxd.ru/yandex", snippet: "Эксперимент с интерфейсом классического Яндекса." },
                 { keys: ["ynd", "ynd.su"], title: "ynd.su - Обо мне", url: "http://ynd.su", snippet: "Персональный сайт разработчика Nekich Search." },
-                { keys: ["vk", "vk.com", "вконтакте", "вк"], title: "ВКонтакте - добро пожаловать", url: "http://vk.com", snippet: "Универсальное средство для поиска друзей и одноклассников. Социальная сеть." },
+                { keys: ["old-dos", "olddos", "old dos"], title: "Old-DOS.ru - Крупнейший архив старых программ", url: "http://old-dos.ru", snippet: "Архив старых программ для DOS, Windows 95, 98, 2000 и XP." },
+
+                // Gaming
+                { keys: ["игры", "игра", "игры онлайн", "бесплатные игры", "games", "game"], title: "Яндекс Игры — играть онлайн бесплатно", url: "http://yandex.ru/games", snippet: "Каталог бесплатных онлайн-игр без установки: головоломки, стрелялки, гонки и аркады." },
+                { keys: ["игры", "игра", "игры онлайн", "игры в браузере", "poki"], title: "Poki (Поки) — Бесплатные онлайн игры", url: "http://poki.com/ru", snippet: "Играйте в популярные бесплатные игры прямо в браузере на телефоне или компьютере." },
+                { keys: ["игры", "crazygames", "браузерные игры"], title: "CrazyGames — браузерные игры онлайн", url: "http://www.crazygames.com/ru", snippet: "Большая подборка браузерных игр всех жанров для одного и нескольких игроков." },
+                { keys: ["игры", "играть", "онлайн игры", "igru"], title: "Все Игры — Онлайн игры на Igru.net", url: "http://igru.net", snippet: "Огромный сборник игр для мальчиков и девочек, от гонок до стратегий." },
+                { keys: ["steam", "стим", "игры пк"], title: "Steam — Магазин цифровых игр", url: "http://store.steampowered.com", snippet: "Крупнейшая платформа цифровой дистрибуции игр для ПК, Mac и Linux." },
+
+                // Cats & Photos
+                { keys: ["котики", "коты", "котята", "кот", "кошка", "cats", "милые котики"], title: "Котики Фото Милые — Pinterest", url: "http://ru.pinterest.com/ideas/%D0%BA%D0%BE%D1%82%D0%B8%D0%BA%D0%B8-%D1%84%D0%BE%D1%82%D0%BE-%D0%BC%D0%B8%D0%BB%D1%8B%D0%B5/894704729167/", snippet: "Подборки самых милых и забавных фотографий котиков и котят со всего мира." },
+                { keys: ["котики", "коты", "картинки", "фото"], title: "Яндекс Картинки: Котики", url: "http://ya.ru/images/search?text=%D0%BA%D0%BE%D1%82%D0%B8%D0%BA%D0%B8", snippet: "Поиск качественных картинок, обоев на рабочий стол и фотографий котиков." },
+
+                // Music
+                { keys: ["музыка", "скачать музыку", "песни", "music", "mp3", "слушать музыку"], title: "Mp3teka — Скачать музыку и слушать песни онлайн", url: "http://mp3teka.com", snippet: "Популярные новинки музыки и любимые хиты в формате MP3 бесплатно." },
+                { keys: ["музыка", "скачать музыку", "зайцев", "zaycev"], title: "Zaycev.net — Новая музыка бесплатно", url: "http://zaycev.net", snippet: "Легендарный музыкальный портал для прослушивания и загрузки песен." },
+
+                // News
+                { keys: ["новости", "новости дня", "новости сегодня", "news", "сми"], title: "РБК — Главные новости дня в России и мире", url: "http://www.rbc.ru", snippet: "Оперативные новости политики, экономики, бизнеса, финансов и технологий." },
+                { keys: ["новости", "риа", "риа новости"], title: "РИА Новости — Главные события", url: "http://ria.ru", snippet: "Свежие новости, аналитика, комментарии экспертов и фоторепортажи." },
+                { keys: ["новости", "лента", "lenta"], title: "Lenta.ru — Новости России и мира", url: "http://lenta.ru", snippet: "Информационно-новостное интернет-издание. Главные темы и факты." },
+
+                // Video & Movies
+                { keys: ["youtube", "ютуб", "видео", "ролики"], title: "YouTube — Смотреть видео онлайн", url: "http://youtube.com", snippet: "Крупнейший видеохостинг. Музыкальные клипы, блоги, фильмы и трансляции." },
+                { keys: ["фильмы", "кино", "сериалы", "кинопоиск", "kinopoisk"], title: "Кинопоиск — Все фильмы и сериалы", url: "http://www.kinopoisk.ru", snippet: "Рейтинги, отзывы, трейлеры, расписание сеансов и онлайн-кинотеатр." },
+                { keys: ["rutube", "рутуб", "видео"], title: "RUTUBE — Российский видеохостинг", url: "http://rutube.ru", snippet: "Видео, передачи, шоу, сериалы и трансляции в хорошем качестве." },
+
+                // Downloads & Soft
+                { keys: ["скачать", "торрент", "рутрекер", "rutracker"], title: "RuTracker.org — Битторрент-трекер", url: "http://rutracker.org", snippet: "Крупнейший каталог раздач: программы, фильмы, музыка, книги и софт." },
+                { keys: ["4pda", "4pda.to", "пда", "андроид", "прошивки"], title: "4PDA — Всё о мобильных устройствах", url: "http://4pda.to", snippet: "Новости, обзоры, форум, каталог программ и прошивок для смартфонов и ПК." },
+
+                // Shopping
+                { keys: ["купить", "магазин", "вайлдберриз", "wildberries"], title: "Wildberries — Интернет-магазин", url: "http://www.wildberries.ru", snippet: "Одежда, обувь, электроника, товары для дома и бытовая техника с быстрой доставкой." },
+                { keys: ["ozon", "озон", "купить", "товары"], title: "Ozon — Маркетплейс товаров", url: "http://www.ozon.ru", snippet: "Миллионы товаров по выгодным ценам с доставкой по всей стране." },
+                { keys: ["авито", "avito", "объявления"], title: "Авито — Доска бесплатных объявлений", url: "http://www.avito.ru", snippet: "Покупка и продажа вещей, авто, недвижимости, работа и услуги." },
+                { keys: ["dns", "днс", "компьютер", "компьютеры", "ноутбуки"], title: "DNS — Сеть магазинов цифровой техники", url: "http://www.dns-shop.ru", snippet: "Компьютеры, комплектующие, ноутбуки, смартфоны и бытовая техника." },
+
+                // Portals & Social
+                { keys: ["вконтакте", "вк", "vk", "vk.com"], title: "ВКонтакте — добро пожаловать", url: "http://vk.com", snippet: "Универсальное средство для поиска друзей и общения. Музыка, видео и сообщества." },
+                { keys: ["telegram", "телеграм", "телега"], title: "Telegram — Безопасный мессенджер", url: "http://t.me", snippet: "Быстрый и удобный мессенджер с поддержкой каналов, групп и ботов." },
+                { keys: ["yandex", "яндекс", "ya.ru"], title: "Яндекс — Поисковая система и портал", url: "http://ya.ru", snippet: "Поиск в Интернете, почта, карты, музыка, маркет и погода. Найдётся всё." },
                 { keys: ["google", "гугл", "google.com"], title: "Google", url: "http://google.com", snippet: "Поисковая система Google. Быстрый поиск информации во всемирной паутине." },
-                { keys: ["youtube", "ютуб", "youtube.com"], title: "YouTube", url: "http://youtube.com", snippet: "Крупнейший видеохостинг. Смотрите любимые видео и делитесь ими с друзьями." },
-                { keys: ["github", "гитхаб", "github.com"], title: "GitHub - Build software better, together", url: "http://github.com", snippet: "Крупнейший веб-сервис для хостинга IT-проектов и совместной разработки ПО." },
-                { keys: ["4pda", "4pda.to", "пда"], title: "4PDA - Всё о мобильных устройствах", url: "http://4pda.to", snippet: "Новости, обзоры, каталог программ и форум о мобильной технике." },
-                { keys: ["old-dos", "olddos", "старые игры"], title: "Old-DOS.ru - Крупнейший архив старых программ", url: "http://old-dos.ru", snippet: "Архив старых программ для DOS, Windows 95, 98, 2000 и XP." },
-                { keys: ["rutracker", "рутрекер"], title: "RuTracker.org", url: "http://rutracker.org", snippet: "Крупнейший русскоязычный битторрент-трекер." },
-                { keys: ["habr", "хабр", "habrahabr"], title: "Хабр - Сообщество IT-специалистов", url: "http://habr.com", snippet: "Публикации об IT, программировании, дизайне, разработке и технологиях." }
+                { keys: ["mail.ru", "мейл", "mail", "почта"], title: "Mail.ru — Почта, поиск и новости", url: "http://mail.ru", snippet: "Почтовый ящик, новости дня, игры, облако и медиапортал Mail.ru." },
+                { keys: ["github", "гитхаб", "код"], title: "GitHub — Платформа для разработчиков", url: "http://github.com", snippet: "Хостинг IT-проектов, совместная разработка ПО и открытый исходный код." },
+                { keys: ["habr", "хабр", "хабрахабр"], title: "Хабр — Сообщество IT-специалистов", url: "http://habr.com", snippet: "Публикации об IT, программировании, дизайне, разработке и технологиях." },
+                { keys: ["погода", "гismeteo", "гисметео"], title: "Gismeteo — Прогноз погоды", url: "http://www.gismeteo.ru", snippet: "Точный прогноз погоды на сегодня, завтра и 14 дней в городах мира." }
             ];
 
             var matchedDirect = false;
@@ -445,6 +483,46 @@
             document.body.appendChild(ddgScript);
 
             function finishSearch() {
+                var qEsc = encodeURIComponent(q);
+
+                // 4. Always provide real Internet-wide search results from top engines
+                var globalWebEngines = [
+                    {
+                        title: "Искать «" + q + "» в Яндексе",
+                        url: httpProto + "//ya.ru/search/?text=" + qEsc,
+                        display_url: "ya.ru",
+                        snippet: "Найдётся всё. Поиск сайтов, картинок, новостей и видео во всем Интернете через Яндекс."
+                    },
+                    {
+                        title: "Искать «" + q + "» в Google",
+                        url: httpProto + "//www.google.com/search?q=" + qEsc,
+                        display_url: "google.com",
+                        snippet: "Быстрый поиск информации во всемирной паутине по запросу «" + q + "»."
+                    },
+                    {
+                        title: "Искать «" + q + "» в DuckDuckGo",
+                        url: httpProto + "//duckduckgo.com/?q=" + qEsc,
+                        display_url: "duckduckgo.com",
+                        snippet: "Конфиденциальный поиск сайтов во всемирной сети без отслеживания и сбора данных."
+                    },
+                    {
+                        title: "Искать «" + q + "» в Microsoft Bing",
+                        url: httpProto + "//www.bing.com/search?q=" + qEsc,
+                        display_url: "bing.com",
+                        snippet: "Глобальный поиск по веб-страницам, документам и сервисам интернета в Bing."
+                    },
+                    {
+                        title: "Искать «" + q + "» в Поиск@Mail.RU",
+                        url: httpProto + "//go.mail.ru/search?q=" + qEsc,
+                        display_url: "mail.ru",
+                        snippet: "Классический российский поиск по порталу и миллионам сайтов Рунета."
+                    }
+                ];
+
+                for (var w = 0; w < globalWebEngines.length; w++) {
+                    collectedResults.push(globalWebEngines[w]);
+                }
+
                 // Deduplicate items by host / url
                 var seen = {};
                 var unique = [];

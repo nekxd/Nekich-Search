@@ -26,6 +26,7 @@ import time
 import os
 import random
 import json
+import base64
 import threading
 import argparse
 from http import cookies
@@ -173,116 +174,173 @@ def fetch_duckduckgo_results(query, page=1):
             "snippet": f"Перейти на веб-сайт {clean_d}. Прямой доступ."
         })
 
-    # 1. DuckDuckGo Instant Answer API (Official site results)
+    # 1. Bing Web Search (Comprehensive, lightning-fast, full Internet search)
     try:
-        api_url = f"https://api.duckduckgo.com/?q={urllib.parse.quote(query)}&format=json&no_html=0&skip_disambig=0"
-        headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"}
-        req = urllib.request.Request(api_url, headers=headers)
-        with urllib.request.urlopen(req, context=ctx, timeout=6) as r:
-            ddg_json = json.loads(r.read().decode("utf-8"))
-            for res_item in ddg_json.get("Results", []):
-                f_url = res_item.get("FirstURL", "")
-                f_text = res_item.get("Text", "")
-                if f_url and "wikipedia.org" not in f_url:
-                    results.append({
-                        "title": f_text or query,
-                        "url": f_url,
-                        "display_url": extract_site_url(f_url),
-                        "snippet": f"Официальный сайт {extract_site_url(f_url)}."
-                    })
-
-            for topic in ddg_json.get("RelatedTopics", []):
-                if "Topics" in topic:
-                    for sub in topic["Topics"]:
-                        if "FirstURL" in sub and "Text" in sub:
-                            first_url = sub["FirstURL"]
-                            if "wikipedia.org" in first_url or "wiktionary.org" in first_url:
-                                continue
-                            text = sub["Text"]
-                            title_part = text.split(" - ")[0] if " - " in text else text[:50]
-                            results.append({
-                                "title": title_part,
-                                "url": first_url,
-                                "display_url": extract_site_url(first_url),
-                                "snippet": text
-                            })
-                elif "FirstURL" in topic and "Text" in topic:
-                    first_url = topic["FirstURL"]
-                    if "wikipedia.org" in first_url or "wiktionary.org" in first_url:
-                        continue
-                    text = topic["Text"]
-                    title_part = text.split(" - ")[0] if " - " in text else text[:50]
-                    results.append({
-                        "title": title_part,
-                        "url": first_url,
-                        "display_url": extract_site_url(first_url),
-                        "snippet": text
-                    })
-    except Exception:
-        pass
-
-    # 2. DuckDuckGo HTML parser for real web search
-    try:
-        url = "https://html.duckduckgo.com/html/"
-        data = {"q": query}
-        if page > 1:
-            data["s"] = str((page - 1) * 30)
-            data["dc"] = str((page - 1) * 30 + 1)
-        headers = {
+        first_idx = 1 if page <= 1 else ((page - 1) * 10 + 1)
+        bing_url = f"https://www.bing.com/search?q={urllib.parse.quote(query)}&first={first_idx}"
+        bing_headers = {
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
             "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-            "Accept-Language": "ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7",
-            "Content-Type": "application/x-www-form-urlencoded"
+            "Accept-Language": "ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7"
         }
-        encoded_data = urllib.parse.urlencode(data).encode("utf-8")
-        req = urllib.request.Request(url, data=encoded_data, headers=headers)
-        with urllib.request.urlopen(req, context=ctx, timeout=8) as resp:
-            html_content = resp.read().decode("utf-8", errors="ignore")
+        b_req = urllib.request.Request(bing_url, headers=bing_headers)
+        with urllib.request.urlopen(b_req, context=ctx, timeout=4) as b_resp:
+            b_html = b_resp.read().decode("utf-8", errors="ignore")
 
-        items = re.findall(r'<div class="result results_links results_links_deep web-result\s*">(.*?)<div class="clear"></div>\s*</div>', html_content, re.DOTALL)
-        if not items:
-            items = re.findall(r'<div class="links_main links_deep result__body">(.*?)<div class="clear"></div>', html_content, re.DOTALL)
-
-        for item in items:
-            title_m = re.search(r'<a[^>]*class="result__a"[^>]*href="([^"]+)"[^>]*>(.*?)</a>', item, re.DOTALL)
-            if not title_m:
-                title_m = re.search(r'<h2 class="result__title">\s*<a[^>]*href="([^"]+)"[^>]*>(.*?)</a>', item, re.DOTALL)
-            snippet_m = re.search(r'<a[^>]*class="result__snippet"[^>]*>(.*?)</a>', item, re.DOTALL)
-            if not snippet_m:
-                snippet_m = re.search(r'<div[^>]*class="result__snippet"[^>]*>(.*?)</div>', item, re.DOTALL)
-
-            if title_m:
-                raw_url = title_m.group(1)
-                raw_title = title_m.group(2)
-                real_url = raw_url
-                if "uddg=" in raw_url:
-                    parsed_q = urllib.parse.parse_qs(urllib.parse.urlparse(raw_url).query)
-                    if "uddg" in parsed_q:
-                        real_url = parsed_q["uddg"][0]
-                elif raw_url.startswith("//duckduckgo.com/l/?") or raw_url.startswith("/l/?"):
-                    parsed_q = urllib.parse.parse_qs(urllib.parse.urlparse("https:" + raw_url).query)
-                    if "uddg" in parsed_q:
-                        real_url = parsed_q["uddg"][0]
+        b_items = re.findall(r'<li class="b_algo"[^>]*>(.*?)</li>', b_html, re.DOTALL)
+        for b_item in b_items:
+            tm = re.search(r'<h2>\s*<a[^>]*href="([^"]+)"[^>]*>(.*?)</a>\s*</h2>', b_item, re.DOTALL)
+            if not tm:
+                tm = re.search(r'<a[^>]*href="([^"]+)"[^>]*>(.*?)</a>', b_item, re.DOTALL)
+            if tm:
+                raw_u = tm.group(1)
+                real_u = raw_u
+                # Decode Bing redirected URL: u=a1<base64>
+                if "u=" in raw_u:
+                    u_part = raw_u.split("u=")[1].split("&")[0]
+                    if u_part.startswith("a1"):
+                        try:
+                            b64_str = u_part[2:]
+                            b64_str += "=" * (-len(b64_str) % 4)
+                            real_u = base64.b64decode(b64_str).decode("utf-8", errors="ignore")
+                        except Exception:
+                            pass
 
                 # Filter out Wikipedia as requested
-                if "wikipedia.org" in real_url or "wiktionary.org" in real_url:
+                if "wikipedia.org" in real_u or "wiktionary.org" in real_u:
                     continue
 
-                clean_title = html.unescape(re.sub(r'<[^>]+>', '', raw_title)).strip()
+                clean_title = html.unescape(re.sub(r'<[^>]+>', '', tm.group(2))).strip()
                 clean_snippet = ""
-                if snippet_m:
-                    clean_snippet = html.unescape(snippet_m.group(1)).strip()
+                snip_m = re.search(r'<p[^>]*>(.*?)</p>', b_item, re.DOTALL)
+                if not snip_m:
+                    snip_m = re.search(r'<div class="b_caption"[^>]*>(.*?)</div>', b_item, re.DOTALL)
+                if snip_m:
+                    clean_snippet = html.unescape(snip_m.group(1)).strip()
                     clean_snippet = re.sub(r'<(?!/?(b|em|strong)\b)[^>]+>', '', clean_snippet)
 
-                clean_display_url = extract_site_url(real_url)
+                clean_display_url = extract_site_url(real_u)
                 results.append({
                     "title": clean_title,
-                    "url": real_url,
+                    "url": real_u,
                     "display_url": clean_display_url,
                     "snippet": clean_snippet
                 })
     except Exception:
         pass
+
+    # 2. DuckDuckGo Instant Answer API (Fallback if few results)
+    if len(results) < 3:
+        try:
+            api_url = f"https://api.duckduckgo.com/?q={urllib.parse.quote(query)}&format=json&no_html=0&skip_disambig=0"
+            headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"}
+            req = urllib.request.Request(api_url, headers=headers)
+            with urllib.request.urlopen(req, context=ctx, timeout=3) as r:
+                ddg_json = json.loads(r.read().decode("utf-8"))
+                for res_item in ddg_json.get("Results", []):
+                    f_url = res_item.get("FirstURL", "")
+                    f_text = res_item.get("Text", "")
+                    if f_url and "wikipedia.org" not in f_url:
+                        results.append({
+                            "title": f_text or query,
+                            "url": f_url,
+                            "display_url": extract_site_url(f_url),
+                            "snippet": f"Официальный сайт {extract_site_url(f_url)}."
+                        })
+
+                for topic in ddg_json.get("RelatedTopics", []):
+                    if "Topics" in topic:
+                        for sub in topic["Topics"]:
+                            if "FirstURL" in sub and "Text" in sub:
+                                first_url = sub["FirstURL"]
+                                if "wikipedia.org" in first_url or "wiktionary.org" in first_url:
+                                    continue
+                                text = sub["Text"]
+                                title_part = text.split(" - ")[0] if " - " in text else text[:50]
+                                results.append({
+                                    "title": title_part,
+                                    "url": first_url,
+                                    "display_url": extract_site_url(first_url),
+                                    "snippet": text
+                                })
+                    elif "FirstURL" in topic and "Text" in topic:
+                        first_url = topic["FirstURL"]
+                        if "wikipedia.org" in first_url or "wiktionary.org" in first_url:
+                            continue
+                        text = topic["Text"]
+                        title_part = text.split(" - ")[0] if " - " in text else text[:50]
+                        results.append({
+                            "title": title_part,
+                            "url": first_url,
+                            "display_url": extract_site_url(first_url),
+                            "snippet": text
+                        })
+        except Exception:
+            pass
+
+    # 3. DuckDuckGo HTML parser fallback
+    if len(results) < 3:
+        try:
+            url = "https://html.duckduckgo.com/html/"
+            data = {"q": query}
+            if page > 1:
+                data["s"] = str((page - 1) * 30)
+                data["dc"] = str((page - 1) * 30 + 1)
+            headers = {
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+                "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+                "Accept-Language": "ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7",
+                "Content-Type": "application/x-www-form-urlencoded"
+            }
+            encoded_data = urllib.parse.urlencode(data).encode("utf-8")
+            req = urllib.request.Request(url, data=encoded_data, headers=headers)
+            with urllib.request.urlopen(req, context=ctx, timeout=4) as resp:
+                html_content = resp.read().decode("utf-8", errors="ignore")
+
+            items = re.findall(r'<div class="result results_links results_links_deep web-result\s*">(.*?)<div class="clear"></div>\s*</div>', html_content, re.DOTALL)
+            if not items:
+                items = re.findall(r'<div class="links_main links_deep result__body">(.*?)<div class="clear"></div>', html_content, re.DOTALL)
+
+            for item in items:
+                title_m = re.search(r'<a[^>]*class="result__a"[^>]*href="([^"]+)"[^>]*>(.*?)</a>', item, re.DOTALL)
+                if not title_m:
+                    title_m = re.search(r'<h2 class="result__title">\s*<a[^>]*href="([^"]+)"[^>]*>(.*?)</a>', item, re.DOTALL)
+                snippet_m = re.search(r'<a[^>]*class="result__snippet"[^>]*>(.*?)</a>', item, re.DOTALL)
+                if not snippet_m:
+                    snippet_m = re.search(r'<div[^>]*class="result__snippet"[^>]*>(.*?)</div>', item, re.DOTALL)
+
+                if title_m:
+                    raw_url = title_m.group(1)
+                    raw_title = title_m.group(2)
+                    real_url = raw_url
+                    if "uddg=" in raw_url:
+                        parsed_q = urllib.parse.parse_qs(urllib.parse.urlparse(raw_url).query)
+                        if "uddg" in parsed_q:
+                            real_url = parsed_q["uddg"][0]
+                    elif raw_url.startswith("//duckduckgo.com/l/?") or raw_url.startswith("/l/?"):
+                        parsed_q = urllib.parse.parse_qs(urllib.parse.urlparse("https:" + raw_url).query)
+                        if "uddg" in parsed_q:
+                            real_url = parsed_q["uddg"][0]
+
+                    # Filter out Wikipedia as requested
+                    if "wikipedia.org" in real_url or "wiktionary.org" in real_url:
+                        continue
+
+                    clean_title = html.unescape(re.sub(r'<[^>]+>', '', raw_title)).strip()
+                    clean_snippet = ""
+                    if snippet_m:
+                        clean_snippet = html.unescape(snippet_m.group(1)).strip()
+                        clean_snippet = re.sub(r'<(?!/?(b|em|strong)\b)[^>]+>', '', clean_snippet)
+
+                    clean_display_url = extract_site_url(real_url)
+                    results.append({
+                        "title": clean_title,
+                        "url": real_url,
+                        "display_url": clean_display_url,
+                        "snippet": clean_snippet
+                    })
+        except Exception:
+            pass
 
     # Deduplicate results by URL
     seen_urls = set()

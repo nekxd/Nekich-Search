@@ -666,26 +666,61 @@ cite {
         line-height: 1.45;
     }
 
-    /* Mobile Ad Sidebar: moves neatly below results */
+    /* Mobile Ad Sidebar: compact & neat below results */
     .results-right {
         display: block !important;
         width: 100% !important;
         max-width: 100% !important;
         box-sizing: border-box !important;
-        margin-top: 25px !important;
+        margin-top: 20px !important;
+        text-align: center !important;
     }
 
     .ad-sidebar {
-        width: 100% !important;
-        max-width: 100% !important;
+        width: auto !important;
+        max-width: 260px !important;
         margin: 0 auto 20px auto !important;
         box-sizing: border-box !important;
-        padding: 14px;
+        padding: 8px 10px !important;
+        border: 1px solid #e0e0e0 !important;
+        border-radius: 3px !important;
+        background: #fafafa !important;
+        text-align: center !important;
+    }
+
+    .ad-label-top {
+        font-size: 10px !important;
+        line-height: 12px !important;
+        margin-bottom: 5px !important;
+        padding: 0 3px !important;
+    }
+
+    .ad-banner-wrap {
+        margin-bottom: 6px !important;
+        text-align: center !important;
     }
 
     .ad-banner-img {
-        max-width: 100% !important;
+        max-width: 220px !important;
+        max-height: 75px !important;
+        width: auto !important;
         height: auto !important;
+        margin: 0 auto !important;
+        display: block !important;
+    }
+
+    .ad-title {
+        font-size: 13px !important;
+        margin-top: 5px !important;
+        margin-bottom: 3px !important;
+        line-height: 1.25 !important;
+    }
+
+    .ad-desc {
+        font-size: 11px !important;
+        line-height: 1.35 !important;
+        color: #555555 !important;
+        margin-top: 2px !important;
     }
 
     /* Mobile Search Footer */
