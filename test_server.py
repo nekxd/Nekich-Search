@@ -83,6 +83,8 @@ def run_tests():
         assert "Сайт закрыт" in content
         assert "soap.nekxd.fun" in content
         assert "Перейти на Soap" in content
+        assert "Спасибо всем" in content
+        assert "Это всё что мы знаем" in content
         assert "nekxd.ru/bg.m4a" in content
         assert "bg-audio" in content
         assert "hp-footer" not in content
