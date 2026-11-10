@@ -16,9 +16,9 @@ def run_tests():
     base_url = f"http://127.0.0.1:{port}"
     cpy = get_copyright_years()
 
-    # 1. Test Copyright on All Pages
+    # 1. Test Copyright on Pages with Footer
     print(f"\n--- Test 1: Dynamic Copyright ({cpy}) ---")
-    pages = ["/", "/home", "/about", "/advertising", "/settings", "/privacy", "/terms", "/business", "/search?q=test"]
+    pages = ["/home", "/about", "/advertising", "/settings", "/privacy", "/terms", "/business", "/search?q=test"]
     for p in pages:
         with urllib.request.urlopen(f"{base_url}{p}") as resp:
             assert resp.status == 200
@@ -82,9 +82,12 @@ def run_tests():
         content = resp.read().decode("utf-8")
         assert "Сайт закрыт" in content
         assert "soap.nekxd.fun" in content
+        assert "Перейти на Soap" in content
         assert "nekxd.ru/bg.m4a" in content
         assert "bg-audio" in content
-        print("  Homepage has 'Сайт закрыт' notice, 'soap.nekxd.fun' link, and 'nekxd.ru/bg.m4a' audio -> OK")
+        assert "hp-footer" not in content
+        assert "Архив поиска" not in content
+        print("  Homepage has 'Сайт закрыт', 'Перейти на Soap', repeat music, no footer, no archive -> OK")
     print("[OK] Closed site notice and music verified!")
 
     # Shutdown
