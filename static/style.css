@@ -477,6 +477,67 @@ cite {
     color: #333333;
 }
 
+/* Closed Site Styles (Classic Google aesthetic) */
+.closed-box {
+    margin: 20px auto 0 auto;
+    max-width: 620px;
+    padding: 0 20px;
+    text-align: center;
+}
+
+.closed-status {
+    font-size: 26px;
+    color: #222222;
+    margin-bottom: 14px;
+    line-height: 1.3;
+}
+
+.closed-status b {
+    font-weight: bold;
+}
+
+.closed-status ins {
+    color: #777777;
+    text-decoration: none;
+    font-weight: normal;
+}
+
+.closed-desc {
+    font-size: 15px;
+    line-height: 1.6;
+    color: #333333;
+    margin-bottom: 25px;
+}
+
+.closed-desc p {
+    margin: 8px 0;
+}
+
+.closed-subtext {
+    color: #555555;
+    font-size: 14px;
+}
+
+.closed-ins ins {
+    color: #777777;
+    text-decoration: none;
+}
+
+.closed-actions {
+    margin-top: 25px;
+    margin-bottom: 30px;
+}
+
+.closed-actions .btn {
+    display: inline-block;
+    margin: 6px 6px;
+    vertical-align: middle;
+}
+
+.music-btn {
+    min-width: 170px;
+}
+
 /* ========================================================= */
 /* Mobile Responsive Version (Smartphones & Tablets <= 768px) */
 /* Old browsers (IE6-IE8) ignore @media and keep desktop UI  */
@@ -528,6 +589,31 @@ cite {
         height: 36px;
         line-height: 34px;
         font-size: 13px;
+    }
+
+    /* Mobile Closed Site */
+    .closed-box {
+        max-width: 100%;
+        padding: 0 10px;
+        margin-top: 15px;
+    }
+
+    .closed-status {
+        font-size: 20px;
+        margin-bottom: 10px;
+    }
+
+    .closed-desc {
+        font-size: 13px;
+        margin-bottom: 16px;
+    }
+
+    .closed-actions .btn {
+        display: block;
+        width: 100%;
+        max-width: 260px;
+        margin: 8px auto;
+        box-sizing: border-box;
     }
 
     .hp-footer {

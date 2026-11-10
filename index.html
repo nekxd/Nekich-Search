@@ -3,7 +3,7 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nekich Search</title>
+    <title>Сайт закрыт - Nekich Search</title>
     <link rel="shortcut icon" href="static/favicon.ico" type="image/x-icon">
     <link rel="icon" href="static/favicon.ico" type="image/x-icon">
     <link rel="stylesheet" type="text/css" href="static/style.css">
@@ -16,18 +16,34 @@
                 <img src="static/images/srpr/logo11w.png" width="269" height="95" alt="Google" class="hp-logo">
             </a>
         </div>
-        
-        <form action="search.html" method="GET" name="f">
-            <div class="hp-search-box-wrap">
-                <input type="text" name="q" class="hp-search-input" maxlength="2048" autocomplete="off" autofocus>
-                
-                <div class="hp-buttons">
-                    <input type="submit" name="btnG" value="Поиск" class="btn">
-                    <input type="submit" name="btnI" value="Мне повезёт!" class="btn">
-                </div>
+
+        <div class="closed-box">
+            <div class="closed-status">
+                <b>Сайт закрыт.</b> <ins>Проект завершён</ins>
             </div>
-        </form>
+
+            <div class="closed-desc">
+                <p>Поисковая система <b>Nekich Search</b> закрыта.</p>
+                <p class="closed-subtext">Спасибо всем пользователям за поддержку и то, что были с нами!</p>
+                <p class="closed-ins"><ins>Это все, что мы знаем.</ins></p>
+            </div>
+
+            <div class="closed-actions">
+                <button type="button" id="music-btn" class="btn music-btn" onclick="toggleMusic()">&#9835; Включить музыку</button>
+                <a href="home.html" class="btn" style="text-decoration:none; display:inline-block; line-height:34px; color:#5F6368;">Архив поиска &rarr;</a>
+            </div>
+        </div>
     </div>
+
+    <!-- Background Audio: nekxd.ru/bg.m4a -->
+    <audio id="bg-audio" loop preload="auto">
+        <source src="//nekxd.ru/bg.m4a" type="audio/mp4">
+        <source src="http://nekxd.ru/bg.m4a" type="audio/mp4">
+    </audio>
+
+    <!--[if IE]>
+    <bgsound id="ie-bgsound" src="http://nekxd.ru/bg.m4a" loop="-1">
+    <![endif]-->
 
     <div class="hp-footer">
         <div class="hp-footer-content">
@@ -47,6 +63,7 @@
     </div>
 
     <script type="text/javascript">
+        // Dynamic copyright
         (function() {
             var y = new Date().getFullYear();
             var el = document.getElementById("copy-year");
@@ -54,6 +71,64 @@
                 el.innerText = (y > 2026) ? "2026-" + y : "2026";
             }
         })();
+
+        // Background music player
+        var audio = document.getElementById("bg-audio");
+        var musicBtn = document.getElementById("music-btn");
+        var isPlaying = false;
+
+        function updateMusicButton(playing) {
+            isPlaying = playing;
+            if (musicBtn) {
+                musicBtn.innerHTML = playing ? "&#10074;&#10074; Пауза" : "&#9835; Включить музыку";
+            }
+        }
+
+        function toggleMusic() {
+            if (!audio) return;
+            if (audio.paused) {
+                var p = audio.play();
+                if (p !== undefined) {
+                    p.then(function() {
+                        updateMusicButton(true);
+                    }).catch(function(err) {
+                        console.log("Play failed:", err);
+                    });
+                } else {
+                    updateMusicButton(true);
+                }
+            } else {
+                audio.pause();
+                updateMusicButton(false);
+            }
+        }
+
+        // Try autoplay on load
+        if (audio) {
+            audio.volume = 0.75;
+            var playPromise = audio.play();
+            if (playPromise !== undefined) {
+                playPromise.then(function() {
+                    updateMusicButton(true);
+                }).catch(function() {
+                    // Browser prevented unmuted autoplay; start on first interaction
+                    updateMusicButton(false);
+                    function startOnFirstTouch() {
+                        if (audio.paused) {
+                            audio.play().then(function() {
+                                updateMusicButton(true);
+                            }).catch(function() {});
+                        }
+                        document.removeEventListener("click", startOnFirstTouch);
+                        document.removeEventListener("keydown", startOnFirstTouch);
+                        document.removeEventListener("touchstart", startOnFirstTouch);
+                    }
+                    document.addEventListener("click", startOnFirstTouch);
+                    document.addEventListener("keydown", startOnFirstTouch);
+                    document.addEventListener("touchstart", startOnFirstTouch);
+                });
+            }
+        }
     </script>
 </body>
 </html>

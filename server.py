@@ -103,6 +103,16 @@ def get_banner_by_index(idx):
             return data
     except Exception as e:
         print(f"[Banner Error] Could not fetch {url}: {e}")
+        local_name = os.path.basename(url)
+        local_path = os.path.join("static", "images", "banners", local_name)
+        if os.path.exists(local_path):
+            try:
+                with open(local_path, "rb") as bf:
+                    data = bf.read()
+                    banner_cache[url] = (data, now)
+                    return data
+            except Exception:
+                pass
         if url in banner_cache:
             return banner_cache[url][0]
         return b'\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00\x01\x00\x00\x00\x01\x08\x06\x00\x00\x00\x1f\x15c4\x00\x00\x00\rIDATx\x9cc`\x00\x00\x00\x02\x00\x01H\xaf\xa4q\x00\x00\x00\x00IEND\xaeB`\x82'
@@ -506,9 +516,14 @@ class NekichSearchHandler(http.server.BaseHTTPRequestHandler):
             self.serve_static("favicon.ico")
             return
 
-        # 1. Homepage
+        # 1. Homepage (Closed notice)
         if path in ["", "/", "/index.html", "/index.htm"]:
             self.serve_homepage()
+            return
+
+        # 1.1 Old Search Homepage (Renamed index)
+        if path in ["/home", "/home.html", "/old_index.html", "/search_home.html"]:
+            self.serve_home()
             return
 
         # 2. Search endpoint
@@ -594,6 +609,21 @@ class NekichSearchHandler(http.server.BaseHTTPRequestHandler):
             self.wfile.write(body)
         except Exception:
             self.serve_404("/")
+
+    def serve_home(self):
+        try:
+            with open("templates/home.html", "r", encoding="utf-8") as f:
+                template_str = f.read()
+            context = {"copyright_years": get_copyright_years()}
+            rendered = render_template(template_str, context)
+            body = rendered.encode("utf-8")
+            self.send_response(200)
+            self.send_header("Content-Type", "text/html; charset=utf-8")
+            self.send_header("Content-Length", str(len(body)))
+            self.end_headers()
+            self.wfile.write(body)
+        except Exception:
+            self.serve_404("/home")
 
     def serve_about(self):
         try:

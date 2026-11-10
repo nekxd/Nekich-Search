@@ -15,7 +15,7 @@
         <table class="header-table">
             <tr>
                 <td class="header-logo-cell">
-                    <a href="index.html">
+                    <a href="home.html">
                         <img src="static/images/srpr/logo11w.png" width="120" height="44" alt="Google" style="border:0;">
                     </a>
                 </td>
@@ -149,7 +149,7 @@
         var btnI = getParam('btnI');
 
         if (!q || q.trim() === "") {
-            window.location.href = "index.html";
+            window.location.href = "home.html";
             return;
         }
 
@@ -193,6 +193,11 @@
             if (bLink && bImg && bTitleLink && bDesc) {
                 bLink.href = banner.target_url;
                 bLink.title = banner.name;
+                bImg.onerror = function() {
+                    var filename = banner.img_url.substring(banner.img_url.lastIndexOf('/') + 1);
+                    this.onerror = null;
+                    this.src = "static/images/banners/" + filename;
+                };
                 bImg.src = banner.img_url;
                 bImg.alt = banner.name;
                 bTitleLink.href = banner.target_url;

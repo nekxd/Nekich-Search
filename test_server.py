@@ -18,7 +18,7 @@ def run_tests():
 
     # 1. Test Copyright on All Pages
     print(f"\n--- Test 1: Dynamic Copyright ({cpy}) ---")
-    pages = ["/", "/about", "/advertising", "/settings", "/privacy", "/terms", "/business", "/search?q=test"]
+    pages = ["/", "/home", "/about", "/advertising", "/settings", "/privacy", "/terms", "/business", "/search?q=test"]
     for p in pages:
         with urllib.request.urlopen(f"{base_url}{p}") as resp:
             assert resp.status == 200
@@ -74,6 +74,17 @@ def run_tests():
         assert "wikipedia.org/wiki" not in content
         print("  Clean site URL displayed in cite and no Wikipedia links -> OK")
     print("[OK] Site URL and clean search verified!")
+
+    # 7. Test Closed Site Page & Background Music (nekxd.ru/bg.m4a)
+    print("\n--- Test 7: Closed Site Notice & Background Music ---")
+    with urllib.request.urlopen(f"{base_url}/") as resp:
+        assert resp.status == 200
+        content = resp.read().decode("utf-8")
+        assert "Сайт закрыт" in content
+        assert "nekxd.ru/bg.m4a" in content
+        assert "bg-audio" in content
+        print("  Homepage has 'Сайт закрыт' notice and 'nekxd.ru/bg.m4a' audio -> OK")
+    print("[OK] Closed site notice and music verified!")
 
     # Shutdown
     server.shutdown()
