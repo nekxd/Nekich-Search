@@ -81,9 +81,10 @@ def run_tests():
         assert resp.status == 200
         content = resp.read().decode("utf-8")
         assert "Сайт закрыт" in content
+        assert "soap.nekxd.fun" in content
         assert "nekxd.ru/bg.m4a" in content
         assert "bg-audio" in content
-        print("  Homepage has 'Сайт закрыт' notice and 'nekxd.ru/bg.m4a' audio -> OK")
+        print("  Homepage has 'Сайт закрыт' notice, 'soap.nekxd.fun' link, and 'nekxd.ru/bg.m4a' audio -> OK")
     print("[OK] Closed site notice and music verified!")
 
     # Shutdown
